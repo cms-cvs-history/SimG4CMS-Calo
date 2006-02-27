@@ -1,7 +1,7 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/01/05 08:59:20 $
+ * $Date: 2006/02/27 08:41:05 $
  * $Revision: 1.1 $
  * \author F. Cossutti
  *
@@ -208,10 +208,10 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meEEe9oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
     sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 1 multiplicity" ) ;
-    menESHits1_ = dbe_->book1D(histo, histo, 5, 0., 5. ) ;
+    menESHits1_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
 
     sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 2 multiplicity" ) ;
-    menESHits2_ = dbe_->book1D(histo, histo, 5, 0., 5. ) ;
+    menESHits2_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
 
     sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 1" ) ;
     meESEnergyHits1_ = dbe_->book1D(histo, histo, 300, 0., 0.0003 ) ;
