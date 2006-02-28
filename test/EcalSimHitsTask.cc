@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/02/27 08:41:05 $
- * $Revision: 1.1 $
+ * $Date: 2006/02/27 13:27:45 $
+ * $Revision: 1.2 $
  * \author F. Cossutti
  *
 */
@@ -463,11 +463,11 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
      ESEnergy_ += isim->energy();
      nESHits++;
 
-     if (esid.plane() == 0 ) { 
+     if (esid.plane() == 1 ) { 
        nESHits1++ ; 
        if (meESEnergyHits1_) meESEnergyHits1_->Fill(isim->energy()) ; 
      }
-     else if (esid.plane() == 1 ) {
+     else if (esid.plane() == 2 ) {
        nESHits2++ ; 
        if (meESEnergyHits2_) meESEnergyHits2_->Fill(isim->energy()) ; 
      }
@@ -706,3 +706,7 @@ uint32_t EcalSimHitsTask::getUnitWithMaxEnergy(MapType& themap) {
               << unitWithMaxEnergy << std::dec << std::endl;
   return unitWithMaxEnergy;
 }
+
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(EcalSimHitsTask)
