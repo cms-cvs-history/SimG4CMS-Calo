@@ -4,9 +4,14 @@
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/EcalDetId>
 <use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/MessageLogger>
 <use name=DQMServices/CoreROOT>
 <use name=boost>
 <use name=root>
 <flags SEAL_PLUGIN_NAME="testEcalSimHits">
 <library file=EcalSimHitsTask.cc name=testEcalSimHits>
 </library>
+
+

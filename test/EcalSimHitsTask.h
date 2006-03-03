@@ -4,7 +4,7 @@
 /*
  * \file EcalSimHitsTask.h
  *
- * $Date: 2006/01/11 11:56:47 $
+ * $Date: 2006/02/27 08:41:05 $
  * $Revision: 1.1 $
  * \author F. Cossutti
  *
@@ -19,6 +19,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
 #include "DQMServices/Daemon/interface/MonitorDaemon.h"
@@ -104,10 +105,10 @@ private:
 
  MonitorElement* menEBHits_;
  MonitorElement* menEEHits_;
- MonitorElement* menESHits_;
 
  MonitorElement* meEBoccupancy_;
- MonitorElement* meEEoccupancy_;
+ MonitorElement* meEEoccupancyzp_;
+ MonitorElement* meEEoccupancyzm_;
 
  MonitorElement* meEBEnergyFraction_;
  MonitorElement* meEEEnergyFraction_;
@@ -115,6 +116,9 @@ private:
 
  MonitorElement* meEBLongitudinalShower_;
  MonitorElement* meEELongitudinalShower_;
+
+ MonitorElement* meEBhitEnergy_;
+ MonitorElement* meEEhitEnergy_;
 
  MonitorElement* meEBe1_; 
  MonitorElement* meEBe4_; 
@@ -142,11 +146,20 @@ private:
  MonitorElement* meEEe1oe25_;
  MonitorElement* meEEe9oe25_;
 
- MonitorElement* menESHits1_;
- MonitorElement* menESHits2_;
+ MonitorElement* menESHits1zp_;
+ MonitorElement* menESHits2zp_;
 
- MonitorElement* meESEnergyHits1_;
- MonitorElement* meESEnergyHits2_;
+ MonitorElement* menESHits1zm_;
+ MonitorElement* menESHits2zm_;
+
+ MonitorElement* meESEnergyHits1zp_;
+ MonitorElement* meESEnergyHits2zp_;
+
+ MonitorElement* meESEnergyHits1zm_;
+ MonitorElement* meESEnergyHits2zm_;
+
+ MonitorElement* meEEvsESEnergyzp_;
+ MonitorElement* meEEvsESEnergyzm_;
 
 };
 

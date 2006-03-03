@@ -22,9 +22,9 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   outputFile_ = ps.getUntrackedParameter<string>("outputFile", "");
  
   if ( outputFile_.size() != 0 ) {
-    cout << " Ecal SimHits Task histograms will be saved to '" << outputFile_.c_str() << "'" << endl;
+    LogInfo("OutputInfo") << " Ecal SimHits Task histograms will be saved to " << outputFile_.c_str();
   } else {
-    cout << " Ecal SimHits Task histograms will NOT be saved" << endl;
+    LogInfo("OutputInfo") << " Ecal SimHits Task histograms will NOT be saved";
   }
  
   // verbosity switch
@@ -35,10 +35,13 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   } else {
     cout << " verbose switch is OFF" << endl;
   }
-                                                                                                                                          
+
+  // DQMServices 
+                                                          
   dbe_ = 0;
-                                                                                                                                          
+
   // get hold of back-end interface
+
   dbe_ = Service<DaqMonitorBEInterface>().operator->();
                                                                                                                                           
   if ( dbe_ ) {
@@ -50,7 +53,10 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   }
                                                                                                                                           
   if ( dbe_ ) {
-    if ( verbose_ ) dbe_->showDirStructure();
+    if ( verbose_ ) {
+      sleep (3);
+      dbe_->showDirStructure();
+    }
   }
  
   meGunEnergy_ = 0;
@@ -59,10 +65,10 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
 
   menEBHits_ = 0;
   menEEHits_ = 0;
-  menESHits_ = 0;
 
   meEBoccupancy_ = 0;
-  meEEoccupancy_ = 0;
+  meEEoccupancyzp_ = 0;
+  meEEoccupancyzm_ = 0;
  
   meEBEnergyFraction_ = 0;
   meEEEnergyFraction_ = 0;
@@ -70,6 +76,9 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
 
   meEBLongitudinalShower_ = 0;
   meEELongitudinalShower_ = 0;
+
+  meEBhitEnergy_ = 0;
+  meEEhitEnergy_ = 0;
 
   meEBe1_ = 0;  
   meEBe4_ = 0;  
@@ -90,11 +99,20 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   meEEe16_ = 0; 
   meEEe25_ = 0; 
 
-  menESHits1_ = 0;     
-  menESHits2_ = 0;     
+  menESHits1zp_ = 0;     
+  menESHits2zp_ = 0;     
+
+  menESHits1zm_ = 0;     
+  menESHits2zm_ = 0;     
                                     
-  meESEnergyHits1_ = 0;
-  meESEnergyHits2_ = 0;
+  meESEnergyHits1zp_ = 0;
+  meESEnergyHits2zp_ = 0;
+                                    
+  meESEnergyHits1zm_ = 0;
+  meESEnergyHits2zm_ = 0;
+
+  meEEvsESEnergyzp_ = 0;
+  meEEvsESEnergyzm_ = 0;
 
   Char_t histo[20];
  
@@ -117,14 +135,14 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     sprintf (histo, "EcalSimHitsTask Endcap EE hits multiplicity" ) ;
     menEEHits_ = dbe_->book1D(histo, histo, 100, 0., 1000.) ; 
 
-    sprintf (histo, "EcalSimHitsTask Preshower ES hits multiplicity" ) ;
-    menESHits_ = dbe_->book1D(histo, histo, 100, 0., 1000.) ; 
-  
     sprintf (histo, "EcalSimHitsTask Barrel occupancy" ) ;
     meEBoccupancy_ = dbe_->book2D(histo, histo, 360, 0., 360., 170, -85., 85.);
   
-    sprintf (histo, "EcalSimHitsTask Endcap occupancy" ) ;
-    meEEoccupancy_ = dbe_->book2D(histo, histo, 100, 0., 100., 100, 0., 100.);
+    sprintf (histo, "EcalSimHitsTask Endcap occupancy z+" ) ;
+    meEEoccupancyzp_ = dbe_->book2D(histo, histo, 100, 0., 100., 100, 0., 100.);
+  
+    sprintf (histo, "EcalSimHitsTask Endcap occupancy z-" ) ;
+    meEEoccupancyzm_ = dbe_->book2D(histo, histo, 100, 0., 100., 100, 0., 100.);
   
     sprintf (histo, "EcalSimHitsTask Barrel fraction of energy" ) ;
     meEBEnergyFraction_ = dbe_->book1D(histo, histo, 50 , 0.8 , 1.0);
@@ -133,13 +151,19 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meEEEnergyFraction_ = dbe_->book1D(histo, histo, 50 , 0.8 , 1.0);
   
     sprintf (histo, "EcalSimHitsTask Preshower fraction of energy" ) ;
-    meESEnergyFraction_ = dbe_->book1D(histo, histo, 50 , 0.8 , 1.0);
+    meESEnergyFraction_ = dbe_->book1D(histo, histo, 50 , 0. , 0.01);
 
     sprintf (histo, "EcalSimHitsTask Barrel longitudinal shower profile" ) ;
     meEBLongitudinalShower_ = dbe_->bookProfile(histo, histo, 26,0,26, 100, 0, 3000);
 
     sprintf (histo, "EcalSimHitsTask Endcap longitudinal shower profile" ) ;
     meEELongitudinalShower_ = dbe_->bookProfile(histo, histo, 26,0,26, 100, 0, 3000);
+
+    sprintf (histo, "EcalSimHitsTask Barrel EB hit energy spectrum" );
+    meEBhitEnergy_ = dbe_->book1D(histo, histo, 100000, 0., 1000.);
+
+    sprintf (histo, "EcalSimHitsTask Endcap EE hit energy spectrum" );
+    meEEhitEnergy_ = dbe_->book1D(histo, histo, 100000, 0., 1000.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E1" ) ;
     meEBe1_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
@@ -156,22 +180,22 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     sprintf (histo, "EcalSimHitsTask Barrel E25" ) ;
     meEBe25_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
 
-    sprintf (histo, "EcalSimHitsTask Barrel E1/E4" ) ;
+    sprintf (histo, "EcalSimHitsTask Barrel E1oE4" ) ;
     meEBe1oe4_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Barrel E4/E9" ) ;
+    sprintf (histo, "EcalSimHitsTask Barrel E4oE9" ) ;
     meEBe4oe9_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Barrel E9/E16" ) ;
+    sprintf (histo, "EcalSimHitsTask Barrel E9oE16" ) ;
     meEBe9oe16_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Barrel E16/E25" ) ;
+    sprintf (histo, "EcalSimHitsTask Barrel E16oE25" ) ;
     meEBe16oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Barrel E1/E25" ) ;
+    sprintf (histo, "EcalSimHitsTask Barrel E1oE25" ) ;
     meEBe1oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Barrel E9/E25" ) ;
+    sprintf (histo, "EcalSimHitsTask Barrel E9oE25" ) ;
     meEBe9oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
     sprintf (histo, "EcalSimHitsTask Endcap E1" ) ;
@@ -189,36 +213,54 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     sprintf (histo, "EcalSimHitsTask Endcap E25" ) ;
     meEEe25_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
 
-    sprintf (histo, "EcalSimHitsTask Endcap E1/E4" ) ;
+    sprintf (histo, "EcalSimHitsTask Endcap E1oE4" ) ;
     meEEe1oe4_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Endcap E4/E9" ) ;
+    sprintf (histo, "EcalSimHitsTask Endcap E4oE9" ) ;
     meEEe4oe9_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Endcap E9/E16" ) ;
+    sprintf (histo, "EcalSimHitsTask Endcap E9oE16" ) ;
     meEEe9oe16_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Endcap E16/E25" ) ;
+    sprintf (histo, "EcalSimHitsTask Endcap E16oE25" ) ;
     meEEe16oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Endcap E1/E25" ) ;
+    sprintf (histo, "EcalSimHitsTask Endcap E1oE25" ) ;
     meEEe1oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Endcap E9/E25" ) ;
+    sprintf (histo, "EcalSimHitsTask Endcap E9oE25" ) ;
     meEEe9oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
-    sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 1 multiplicity" ) ;
-    menESHits1_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+    sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 1 multiplicity z+" ) ;
+    menESHits1zp_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
 
-    sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 2 multiplicity" ) ;
-    menESHits2_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+    sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 2 multiplicity z+" ) ;
+    menESHits2zp_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
 
-    sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 1" ) ;
-    meESEnergyHits1_ = dbe_->book1D(histo, histo, 300, 0., 0.0003 ) ;
+    sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 1 multiplicity z-" ) ;
+    menESHits1zm_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
 
-    sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 2" ) ;
-    meESEnergyHits2_ = dbe_->book1D(histo, histo, 300, 0., 0.0003 ) ;
-      
+    sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 2 multiplicity z-" ) ;
+    menESHits2zm_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+
+    sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 1 z+" ) ;
+    meESEnergyHits1zp_ = dbe_->book1D(histo, histo, 100, 0., 0.001 ) ;
+
+    sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 2 z+" ) ;
+    meESEnergyHits2zp_ = dbe_->book1D(histo, histo, 100, 0., 0.001 ) ;
+
+    sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 1 z-" ) ;
+    meESEnergyHits1zm_ = dbe_->book1D(histo, histo, 100, 0., 0.001 ) ;
+
+    sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 2 z-" ) ;
+    meESEnergyHits2zm_ = dbe_->book1D(histo, histo, 100, 0., 0.001 ) ;
+
+    sprintf (histo, "EcalSimHitsTask Preshower EE vs ES energy z+" ) ;
+    meEEvsESEnergyzp_ = dbe_->bookProfile(histo, histo, 150, 0., 300., 80, 0., 80.);
+
+    sprintf (histo, "EcalSimHitsTask Preshower EE vs ES energy z-" ) ;
+    meEEvsESEnergyzm_ = dbe_->bookProfile(histo, histo, 150, 0., 300., 80, 0., 80.);
+
   }
  
 }
@@ -283,10 +325,7 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
     hphi = (hphi>=0) ? hphi : hphi+2*M_PI;
     hphi = hphi / M_PI * 180.;
 
-    if (verbose_) {
-      cout<< "Particle gun type form MC = "<< abs((*p)->pdg_id()) << endl; 
-      cout<< "Energy = "<< (*p)->momentum().e() << " Eta = " << heta << " Phi = " << hphi << endl;  
-    }
+    LogDebug("EventInfo") << "Particle gun type form MC = " << abs((*p)->pdg_id()) << "\n" << "Energy = "<< (*p)->momentum().e() << " Eta = " << heta << " Phi = " << hphi;
 
     if (meGunEnergy_) meGunEnergy_->Fill((*p)->momentum().e());
     if (meGunEta_) meGunEta_->Fill(heta);
@@ -294,17 +333,9 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 
   }
 
-  //for (vector<EmbdSimTrack>::iterator isimtk = theSimTracks.begin();
-  //     isimtk != theSimTracks.end(); ++isimtk){
-  //  cout<<" Track momentum  x = "<<isimtk->momentum().x() <<" y = "<<isimtk->momentum().y() <<" z = "<< isimtk->momentum().z()<<endl;
-  //  cout<<" Track momentum Ptx = "<<isimtk->momentum().perp() <<endl;
-  //}
-
   for (vector<EmbdSimVertex>::iterator isimvtx = theSimVertexes.begin();
        isimvtx != theSimVertexes.end(); ++isimvtx){
-    if (verbose_ ) {
-      cout<<" Vertex position  x = "<<isimvtx->position().x() <<" y = "<<isimvtx->position().y() <<" z = "<< isimvtx->position().z()<<endl;
-    }
+    LogDebug("EventInfo") <<" Vertex position  x = "<<isimvtx->position().x() <<" y = "<<isimvtx->position().y() <<" z = "<< isimvtx->position().z();
   }
 
    std::map<unsigned int, std::vector<PCaloHit>,std::less<unsigned int> > CaloHitMap;
@@ -323,21 +354,21 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 	isim != theEBCaloHits.end(); ++isim){
      CaloHitMap[(*isim).id()].push_back((*isim));
      
-     EBDetId ebid = EBDetId(isim->id()) ;
+     EBDetId ebid (isim->id()) ;
 
-     if ( verbose_ ) {
-       std::cout<<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<<std::endl;	
-       std::cout << "Energy = " << isim->energy() << " Time = " << isim->time() << std::endl;
-       std::cout << "EBDetId = " << ebid.ieta() << " " << ebid.iphi() << std::endl;
-     }
+     LogDebug("HitInfo") 
+       <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"	
+       << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
+       << "EBDetId = " << ebid.ieta() << " " << ebid.iphi();
 
-     if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.iphi(), ebid.ieta() );
+     if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.ieta(), ebid.iphi() );
 
      uint32_t crystid = ebid.rawId();
      ebmap[crystid] += isim->energy();
 
      EBEnergy_ += isim->energy();
      nEBHits++;
+     meEBhitEnergy_->Fill(isim->energy());
 
    }
 
@@ -385,26 +416,35 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
    MapType eemap;
    uint32_t nEEHits = 0;
    double EEEnergy_ = 0.;
+   double EEetzp_ = 0.;
+   double EEetzm_ = 0.;
    
    for (std::vector<PCaloHit>::iterator isim = theEECaloHits.begin();
 	isim != theEECaloHits.end(); ++isim){
      CaloHitMap[(*isim).id()].push_back((*isim));
      
-     EEDetId eeid = EEDetId(isim->id()) ;
+     EEDetId eeid (isim->id()) ;
      
-     if (verbose_ ) {
-       std::cout<<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<<std::endl;	
-       std::cout << "Energy = " << isim->energy() << " Time = " << isim->time() << std::endl;
-       std::cout << "EEDetId = " << eeid.ix() << " " << eeid.iy() << std::endl;
+     LogDebug("HitInfo")
+       <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
+       << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
+       << "EEDetId side " << eeid.zside() << " = " << eeid.ix() << " " << eeid.iy() ;
+     
+     if (eeid.zside() > 0 ) {
+       EEetzp_ += isim->energy();
+       if (meEEoccupancyzp_) meEEoccupancyzp_->Fill( eeid.ix(), eeid.iy() );
      }
-     
-     if (meEEoccupancy_) meEEoccupancy_->Fill( eeid.ix(), eeid.iy() );
+     else if (eeid.zside() < 0 ) {
+       EEetzm_ += isim->energy();
+       if (meEEoccupancyzm_) meEEoccupancyzm_->Fill( eeid.ix(), eeid.iy() );
+     }
 
      uint32_t crystid = eeid.rawId();
      eemap[crystid] += isim->energy();
 
-     EEEnergy_ += isim->energy();
      nEEHits++;
+     meEEhitEnergy_->Fill(isim->energy());
+     EEEnergy_ += isim->energy();
 
    }
 
@@ -443,44 +483,65 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
      
    }
 
-   uint32_t nESHits = 0;
-   uint32_t nESHits1 = 0;
-   uint32_t nESHits2 = 0;
+   uint32_t nESHits1zp = 0;
+   uint32_t nESHits1zm = 0;
+   uint32_t nESHits2zp = 0;
+   uint32_t nESHits2zm = 0;
    double ESEnergy_ = 0.;
+   double ESet1zp_ = 0.;
+   double ESet2zp_ = 0.;
+   double ESet1zm_ = 0.;
+   double ESet2zm_ = 0.;
    
    for (std::vector<PCaloHit>::iterator isim = theESCaloHits.begin();
 	isim != theESCaloHits.end(); ++isim){
      CaloHitMap[(*isim).id()].push_back((*isim));
      
-     ESDetId esid = ESDetId(isim->id()) ;
+     ESDetId esid (isim->id()) ;
      
-     if (verbose_ ) {
-       std::cout<<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<<std::endl;	
-       std::cout << "Energy = " << isim->energy() << " Time = " << isim->time() << std::endl;
-       std::cout << "ESDetId: z side " << esid.zside() << "  plane " << esid.plane() << esid.six() << ',' << esid.siy() << ':' << esid.strip() << std::endl;
-     }
+     LogDebug("HitInfo")
+       <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
+       << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
+       << "ESDetId: z side " << esid.zside() << "  plane " << esid.plane() << esid.six() << ',' << esid.siy() << ':' << esid.strip();
+
      
      ESEnergy_ += isim->energy();
-     nESHits++;
-
+     
      if (esid.plane() == 1 ) { 
-       nESHits1++ ; 
-       if (meESEnergyHits1_) meESEnergyHits1_->Fill(isim->energy()) ; 
+       if (esid.zside() > 0 ) {
+         nESHits1zp++ ;
+         ESet1zp_ += isim->energy();
+         if (meESEnergyHits1zp_) meESEnergyHits1zp_->Fill(isim->energy()) ; 
+       }
+       else if (esid.zside() < 0 ) {
+         nESHits1zm++ ; 
+         ESet1zm_ += isim->energy();
+         if (meESEnergyHits1zm_) meESEnergyHits1zm_->Fill(isim->energy()) ; 
+       }
      }
      else if (esid.plane() == 2 ) {
-       nESHits2++ ; 
-       if (meESEnergyHits2_) meESEnergyHits2_->Fill(isim->energy()) ; 
+       if (esid.zside() > 0 ) {
+         nESHits2zp++ ; 
+         ESet2zp_ += isim->energy();
+         if (meESEnergyHits2zp_) meESEnergyHits2zp_->Fill(isim->energy()) ; 
+       }
+       else if (esid.zside() < 0 ) {
+         nESHits2zm++ ; 
+         ESet2zm_ += isim->energy();
+         if (meESEnergyHits2zm_) meESEnergyHits2zm_->Fill(isim->energy()) ; 
+       }
      }
 
    }
 
-   if (menESHits_) menESHits_->Fill(nESHits);
+   if (menESHits1zp_) menESHits1zp_->Fill(nESHits1zp);
+   if (menESHits1zm_) menESHits1zm_->Fill(nESHits1zm);
 
-   if (menESHits1_) menESHits1_->Fill(nESHits1);
+   if (menESHits2zp_) menESHits2zp_->Fill(nESHits2zp);
+   if (menESHits2zm_) menESHits2zm_->Fill(nESHits2zm);
 
-   if (menESHits2_) menESHits2_->Fill(nESHits2);
-
-   
+   if (meEEvsESEnergyzp_) meEEvsESEnergyzp_->Fill((ESet1zp_+0.7*ESet2zp_)/0.00009,EEetzp_);
+   if (meEEvsESEnergyzm_) meEEvsESEnergyzm_->Fill((ESet1zm_+0.7*ESet2zm_)/0.00009,EEetzm_);
 
    double etot = EBEnergy_ + EEEnergy_ + ESEnergy_ ;
    double fracEB = 0.0;
@@ -490,7 +551,7 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
    if (etot>0.0) { 
      fracEB = EBEnergy_/etot; 
      fracEE = EEEnergy_/etot; 
-     fracEB = ESEnergy_/etot; 
+     fracES = ESEnergy_/etot; 
    }
 
    if (meEBEnergyFraction_) meEBEnergyFraction_->Fill(fracEB);
@@ -531,17 +592,13 @@ float EcalSimHitsTask::energyInMatrixEB(int nCellInEta, int nCellInPhi,
 
       totalEnergy   += themap[index];
       ncristals     += 1;
-      if (verbose_)
-        std::cout << "EcalSimHitsTask::energyInMatrixEB: ieta - iphi - E = " << ieta 
-                  << "  " << iphi << " "  << themap[index] << std::endl;
     }
   }
   
-  if (verbose_)
-    std::cout << "EcalSimHitsTask::energyInMatrixEB: energy in " << nCellInEta 
-              << " cells in eta times " << nCellInPhi 
-              << " cells in phi matrix = " << totalEnergy
-              << " for " << ncristals << " crystals" << std::endl;
+  LogDebug("GeomInfo")
+    << nCellInEta << " x " << nCellInPhi 
+    << " EB matrix energy = " << totalEnergy
+    << " for " << ncristals << " crystals" ;
   return totalEnergy;
   
 }   
@@ -569,17 +626,13 @@ float EcalSimHitsTask::energyInMatrixEE(int nCellInX, int nCellInY,
       } catch ( std::runtime_error &e ) { continue ; }
       totalEnergy   += themap[index];
       ncristals     += 1;
-      if (verbose_)
-        std::cout << "EcalSimHitsTask::energyInMatrixEE: ix - iy - E = " << ix
-                  << "  " << iy << " "  << themap[index] << std::endl;
     }
   }
   
-  if (verbose_)
-    std::cout << "EcalSimHitsTask::energyInMatrixEE: energy in " << nCellInX
-              << " cells in x times " << nCellInY 
-              << " cells in y matrix = " << totalEnergy
-              << " for " << ncristals << " crystals" << std::endl;
+  LogDebug("GeomInfo")
+    << nCellInX << " x " << nCellInY 
+    << " EE matrix energy = " << totalEnergy
+    << " for " << ncristals << " crystals";
   return totalEnergy;
   
 }
@@ -700,10 +753,9 @@ uint32_t EcalSimHitsTask::getUnitWithMaxEnergy(MapType& themap) {
     }                           
   }
   
-  if (verbose_)
-    std::cout << "EcalSimHitsTask: *** max energy of " << maxEnergy 
-              << " MeV was found in Unit id 0x" << std::hex 
-              << unitWithMaxEnergy << std::dec << std::endl;
+  LogDebug("GeomInfo")
+    << " max energy of " << maxEnergy 
+    << " GeV in Unit id " << unitWithMaxEnergy;
   return unitWithMaxEnergy;
 }
 
