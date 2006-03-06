@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/02/27 13:27:45 $
- * $Revision: 1.2 $
+ * $Date: 2006/03/03 17:26:03 $
+ * $Revision: 1.4 $
  * \author F. Cossutti
  *
 */
@@ -618,8 +618,6 @@ float EcalSimHitsTask::energyInMatrixEE(int nCellInX, int nCellInY,
   for (int ix=startX; ix<startX+nCellInX; ix++) {
     for (int iy=startY; iy<startY+nCellInY; iy++) {
       
-      //if ( ix < 1 || ix > 100 ) { continue ; }
-      //if ( iy < 1 || iy > 100 ) { continue ; }
       uint32_t index ;
       try {
         index = EEDetId(ix,iy,centralZ).rawId();
@@ -678,13 +676,13 @@ bool  EcalSimHitsTask::fillEEMatrix(int nCellInX, int nCellInY,
    int startY  =  CentralY - goBackInY;
 
    int i = 0 ;
-   for ( int ieta = startX; ieta < startX+nCellInX; ieta ++ ) {
+   for ( int ix = startX; ix < startX+nCellInX; ix ++ ) {
 
-      for( int iphi = startY; iphi < startY + nCellInY; iphi++ ) {
+      for( int iy = startY; iy < startY + nCellInY; iy++ ) {
 
         uint32_t index ;
         try {
-          index = EEDetId(ieta,iphi,CentralZ).rawId();
+          index = EEDetId(ix,iy,CentralZ).rawId();
         } catch ( std::runtime_error &e ) { continue ; }
         fillmap[i++] = themap[index];
       }
