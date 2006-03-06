@@ -2,11 +2,11 @@
 #include "TTree.h"
 #include "TText.h"
 
-void simHitsPlots()
+void SimHitsPlots()
 {
 
  gROOT ->Reset();
- char*  rfilename = "EcalSimHitsTask_forward_photon30.root";
+ char*  rfilename = "EcalSimHitsTask.root";
 
  delete gROOT->GetListOfFiles()->FindObject(rfilename);
 
