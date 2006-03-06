@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/03 17:26:03 $
- * $Revision: 1.4 $
+ * $Date: 2006/03/06 12:40:45 $
+ * $Revision: 1.5 $
  * \author F. Cossutti
  *
 */
@@ -130,10 +130,10 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meGunPhi_ = dbe_->book1D(histo, histo, 360, 0., 360.);
 
     sprintf (histo, "EcalSimHitsTask Barrel EB hits multiplicity" ) ;
-    menEBHits_ = dbe_->book1D(histo, histo, 100, 0., 1000.) ;
+    menEBHits_ = dbe_->book1D(histo, histo, 100, 0., 10000.) ;
  
     sprintf (histo, "EcalSimHitsTask Endcap EE hits multiplicity" ) ;
-    menEEHits_ = dbe_->book1D(histo, histo, 100, 0., 1000.) ; 
+    menEEHits_ = dbe_->book1D(histo, histo, 100, 0., 10000.) ; 
 
     sprintf (histo, "EcalSimHitsTask Barrel occupancy" ) ;
     meEBoccupancy_ = dbe_->book2D(histo, histo, 360, 0., 360., 170, -85., 85.);
@@ -566,7 +566,7 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
      if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
      if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
    }
-     
+   
 }
 
 float EcalSimHitsTask::energyInMatrixEB(int nCellInEta, int nCellInPhi,
