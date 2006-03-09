@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/06 17:43:01 $
- * $Revision: 1.6 $
+ * $Date: 2006/03/06 18:02:17 $
+ * $Revision: 1.7 $
  * \author F. Cossutti
  *
 */
@@ -287,8 +287,6 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   vector<EmbdSimTrack> theSimTracks;
   vector<EmbdSimVertex> theSimVertexes;
 
-  vector<PEcalValidInfo> thePEcalValidInfo;
-
   Handle<HepMCProduct> MCEvt;
   Handle<EmbdSimTrackContainer> SimTk;
   Handle<EmbdSimVertexContainer> SimVtx;
@@ -301,11 +299,11 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   e.getByLabel(HepMCLabel, MCEvt);
   e.getByLabel(SimTkLabel,SimTk);
   e.getByLabel(SimVtxLabel,SimVtx);
-  e.getByLabel("SimG4Object","EcalHitsEB",EcalHitsEB);
-  e.getByLabel("SimG4Object","EcalHitsEE",EcalHitsEE);
-  e.getByLabel("SimG4Object","EcalHitsES",EcalHitsES);
+  e.getByLabel("r","EcalHitsEB",EcalHitsEB);
+  e.getByLabel("r","EcalHitsEE",EcalHitsEE);
+  e.getByLabel("r","EcalHitsES",EcalHitsES);
 
-  e.getByLabel("SimG4Object","EcalValidInfo",MyPEcalValidInfo);
+  e.getByLabel("r","EcalValidInfo",MyPEcalValidInfo);
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
   theSimVertexes.insert(theSimVertexes.end(),SimVtx->begin(),SimVtx->end());
@@ -540,8 +538,24 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
    if (menESHits2zp_) menESHits2zp_->Fill(nESHits2zp);
    if (menESHits2zm_) menESHits2zm_->Fill(nESHits2zm);
 
-   if (meEEvsESEnergyzp_) meEEvsESEnergyzp_->Fill((ESet1zp_+0.7*ESet2zp_)/0.00009,EEetzp_);
-   if (meEEvsESEnergyzm_) meEEvsESEnergyzm_->Fill((ESet1zm_+0.7*ESet2zm_)/0.00009,EEetzm_);
+   // Fill the EE vs ES plots only for particles in the Endcap acceptance
+   // assuming at most 2 particles back to back...
+
+   for ( HepMC::GenEvent::particle_iterator p = myGenEvent->particles_begin();
+         p != myGenEvent->particles_end(); ++p ) {
+     
+     Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
+     double htheta = hmom.theta();
+     double heta = -log(tan(htheta * 0.5));
+
+     if ( heta > 1.653 && heta < 2.6 ) {
+       if (meEEvsESEnergyzp_) meEEvsESEnergyzp_->Fill((ESet1zp_+0.7*ESet2zp_)/0.00009,EEetzp_);
+     }
+     if ( heta < -1.653 && heta > -2.6 ) {
+       if (meEEvsESEnergyzm_) meEEvsESEnergyzm_->Fill((ESet1zm_+0.7*ESet2zm_)/0.00009,EEetzm_);
+     }
+   
+   }
 
    double etot = EBEnergy_ + EEEnergy_ + ESEnergy_ ;
    double fracEB = 0.0;
@@ -560,13 +574,19 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 
    if (meESEnergyFraction_) meESEnergyFraction_->Fill(fracES);
 
-   vector<float>  BX0 = MyPEcalValidInfo->bX0();
-   vector<float>  EX0 = MyPEcalValidInfo->eX0();
-   for (Int_t ii=0;ii< 26;ii++ ) {
-     if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
-     if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
+   if ( MyPEcalValidInfo->eb1x1() > 0. ) {
+     vector<float>  BX0 = MyPEcalValidInfo->bX0();
+     for (int ii=0;ii< 26;ii++ ) {
+       if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
+     }
    }
-   
+   if ( MyPEcalValidInfo->ee1x1() > 0. ) {
+     vector<float>  EX0 = MyPEcalValidInfo->eX0();
+     for (int ii=0;ii< 26;ii++ ) {
+       if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
+     }
+   }
+     
 }
 
 float EcalSimHitsTask::energyInMatrixEB(int nCellInEta, int nCellInPhi,
