@@ -408,8 +408,6 @@ void SimHitsPlots()
  // Preshower energy vs Endcap one
 
  if (1) {
-   TCanvas * Ecal = new TCanvas("Ecal","Ecal",800,1000);
-   Ecal->Divide(1,2);
    
    TProfile* meEEvsESEnergyzp_;
    rfile->GetObject("DQMData/EcalSimHitsTask/EcalSimHitsTask Preshower EE vs ES energy z+;1",meEEvsESEnergyzp_);
@@ -418,7 +416,16 @@ void SimHitsPlots()
    TProfile* meEEvsESEnergyzm_;
    rfile->GetObject("DQMData/EcalSimHitsTask/EcalSimHitsTask Preshower EE vs ES energy z-;1",meEEvsESEnergyzm_);
    meEEvsESEnergyzm_;
-   
+
+   meEEvsESEnergyzp_->Fit("pol1");
+   meEEvsESEnergyzm_->Fit("pol1");
+
+   TCanvas * Ecal = new TCanvas("Ecal","Ecal",800,1000);
+   Ecal->Divide(1,2);
+
+   gStyle->SetOptStat(11);
+   gStyle->SetOptFit(1111);
+
    Ecal->cd(1);
    meEEvsESEnergyzp_->Draw();
    Ecal->cd(2);
