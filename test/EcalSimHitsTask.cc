@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/06 18:02:17 $
- * $Revision: 1.7 $
+ * $Date: 2006/03/09 14:56:14 $
+ * $Revision: 1.8 $
  * \author F. Cossutti
  *
 */
@@ -280,6 +280,8 @@ void EcalSimHitsTask::endJob(){
 }
 
 void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
+
+  LogInfo("EventInfo") << " Run = " << e.id().run() << " Event = " << e.id().event();
 
   vector<PCaloHit> theEBCaloHits;
   vector<PCaloHit> theEECaloHits;
