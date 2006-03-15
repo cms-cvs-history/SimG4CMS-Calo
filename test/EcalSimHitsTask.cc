@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/09 14:56:14 $
- * $Revision: 1.8 $
+ * $Date: 2006/03/14 15:13:29 $
+ * $Revision: 1.9 $
  * \author F. Cossutti
  *
 */
@@ -301,11 +301,11 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   e.getByLabel(HepMCLabel, MCEvt);
   e.getByLabel(SimTkLabel,SimTk);
   e.getByLabel(SimVtxLabel,SimVtx);
-  e.getByLabel("r","EcalHitsEB",EcalHitsEB);
-  e.getByLabel("r","EcalHitsEE",EcalHitsEE);
-  e.getByLabel("r","EcalHitsES",EcalHitsES);
+  e.getByLabel("SimG4Object","EcalHitsEB",EcalHitsEB);
+  e.getByLabel("SimG4Object","EcalHitsEE",EcalHitsEE);
+  e.getByLabel("SimG4Object","EcalHitsES",EcalHitsES);
 
-  e.getByLabel("r","EcalValidInfo",MyPEcalValidInfo);
+  e.getByLabel("SimG4Object","EcalValidInfo",MyPEcalValidInfo);
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
   theSimVertexes.insert(theSimVertexes.end(),SimVtx->begin(),SimVtx->end());
