@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/14 15:13:29 $
- * $Revision: 1.9 $
+ * $Date: 2006/03/15 23:28:41 $
+ * $Revision: 1.10 $
  * \author F. Cossutti
  *
 */
@@ -313,10 +313,8 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   theEECaloHits.insert(theEECaloHits.end(), EcalHitsEE->begin(), EcalHitsEE->end());
   theESCaloHits.insert(theESCaloHits.end(), EcalHitsES->begin(), EcalHitsES->end());
 
-  HepMC::GenEvent * myGenEvent = new  HepMC::GenEvent(*(MCEvt->GetEvent()));
-   
-  for ( HepMC::GenEvent::particle_iterator p = myGenEvent->particles_begin();
-        p != myGenEvent->particles_end(); ++p ) {
+  for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
+        p != MCEvt->GetEvent()->particles_end(); ++p ) {
 
     Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
     double htheta = hmom.theta();
@@ -543,8 +541,8 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
    // Fill the EE vs ES plots only for particles in the Endcap acceptance
    // assuming at most 2 particles back to back...
 
-   for ( HepMC::GenEvent::particle_iterator p = myGenEvent->particles_begin();
-         p != myGenEvent->particles_end(); ++p ) {
+   for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
+         p != MCEvt->GetEvent()->particles_end(); ++p ) {
      
      Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
      double htheta = hmom.theta();
