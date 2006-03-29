@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/15 23:28:41 $
- * $Revision: 1.10 $
+ * $Date: 2006/03/23 10:51:34 $
+ * $Revision: 1.11 $
  * \author F. Cossutti
  *
 */
@@ -331,9 +331,16 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 
   }
 
+  int nvtx = 0;
   for (vector<EmbdSimVertex>::iterator isimvtx = theSimVertexes.begin();
        isimvtx != theSimVertexes.end(); ++isimvtx){
-    LogDebug("EventInfo") <<" Vertex position  x = "<<isimvtx->position().x() <<" y = "<<isimvtx->position().y() <<" z = "<< isimvtx->position().z();
+    nvtx++;
+    LogDebug("EventInfo") <<" Vertex index = " << nvtx << " vertex dump: " << *isimvtx;
+  }
+
+  for (vector<EmbdSimTrack>::iterator isimtrk = theSimTracks.begin();
+       isimtrk != theSimTracks.end(); ++isimtrk){
+    LogDebug("EventInfo") <<" Starting vertex index = " <<isimtrk->vertIndex() << " track dump: " << *isimtrk ; 
   }
 
    std::map<unsigned int, std::vector<PCaloHit>,std::less<unsigned int> > CaloHitMap;
