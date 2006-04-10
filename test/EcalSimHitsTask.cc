@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/23 10:51:34 $
- * $Revision: 1.11 $
+ * $Date: 2006/03/29 15:55:45 $
+ * $Revision: 1.12 $
  * \author F. Cossutti
  *
 */
@@ -366,7 +366,7 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
        << "EBDetId = " << ebid.ieta() << " " << ebid.iphi();
 
-     if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.ieta(), ebid.iphi() );
+     if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.iphi(), ebid.ieta() );
 
      uint32_t crystid = ebid.rawId();
      ebmap[crystid] += isim->energy();
