@@ -16,6 +16,8 @@ void SimHitsPlots()
  rfile->cd("DQMData/EcalSimHitsTask");
  gDirectory->ls();
 
+ gStyle->SetOptStat("nemruoi");
+
 //////////////////////////////////////////////////////////////
 
 // Particle Gun

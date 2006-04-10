@@ -22,6 +22,8 @@ void SimHitsPlotCompare()
  sfile->cd("DQMData/EcalSimHitsTask");
  gDirectory->ls();
 
+ gStyle->SetOptStat("n");
+
 //////////////////////////////////////////////////////////////
 
 // Particle Gun
