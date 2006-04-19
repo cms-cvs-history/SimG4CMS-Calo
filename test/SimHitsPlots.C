@@ -199,15 +199,35 @@ void SimHitsPlots()
    meEBe25_;
    
    Ecal->cd(1); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe1_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(2); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe4_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(3); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe9_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(4); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe16_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(5); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe25_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->Print("Barrel_Transverse.eps"); 
  }
  
@@ -238,15 +258,35 @@ void SimHitsPlots()
    meEEe25_;
    
    Ecal->cd(1); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe1_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(2); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe4_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(3); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe9_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(4); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe16_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(5); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe25_->Draw(); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->Print("Endcap_Transverse.eps"); 
  }
  

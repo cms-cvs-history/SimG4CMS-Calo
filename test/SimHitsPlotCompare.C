@@ -344,20 +344,40 @@ void SimHitsPlotCompare()
    newmeEBe25_->SetLineColor(2);
    
    Ecal->cd(1); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe1_->Draw(); 
    newmeEBe1_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(2); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe4_->Draw(); 
    newmeEBe4_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(3); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe9_->Draw(); 
    newmeEBe9_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(4); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe16_->Draw(); 
    newmeEBe16_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(5); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEBe25_->Draw(); 
    newmeEBe25_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->Print("Barrel_Transverse_compare.eps"); 
  }
  
@@ -418,20 +438,40 @@ void SimHitsPlotCompare()
    newmeEEe25_->SetLineColor(2);
    
    Ecal->cd(1); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe1_->Draw(); 
    newmeEEe1_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(2); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe4_->Draw(); 
    newmeEEe4_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(3); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe9_->Draw(); 
    newmeEEe9_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(4); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe16_->Draw(); 
    newmeEEe16_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->cd(5); 
+   gPad->SetLogx(0);
+   gPad->SetLogy(0);
    meEEe25_->Draw(); 
    newmeEEe25_->Draw("same"); 
+   gPad->SetLogx(1);
+   gPad->SetLogy(1);
    Ecal->Print("Endcap_Transverse_compare.eps"); 
  }
  
