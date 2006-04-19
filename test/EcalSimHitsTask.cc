@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/03/29 15:55:45 $
- * $Revision: 1.12 $
+ * $Date: 2006/04/10 08:20:02 $
+ * $Revision: 1.13 $
  * \author F. Cossutti
  *
 */
@@ -124,16 +124,16 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meGunEnergy_ = dbe_->book1D(histo, histo, 100, 0., 1000.);
   
     sprintf (histo, "EcalSimHitsTask Gun Eta" ) ;
-    meGunEta_ = dbe_->book1D(histo, histo, 500, -2.5, 2.5);
+    meGunEta_ = dbe_->book1D(histo, histo, 700, -3.5, 3.5);
   
     sprintf (histo, "EcalSimHitsTask Gun Phi" ) ;
     meGunPhi_ = dbe_->book1D(histo, histo, 360, 0., 360.);
 
     sprintf (histo, "EcalSimHitsTask Barrel EB hits multiplicity" ) ;
-    menEBHits_ = dbe_->book1D(histo, histo, 100, 0., 10000.) ;
+    menEBHits_ = dbe_->book1D(histo, histo, 50, 0., 5000.) ;
  
     sprintf (histo, "EcalSimHitsTask Endcap EE hits multiplicity" ) ;
-    menEEHits_ = dbe_->book1D(histo, histo, 100, 0., 10000.) ; 
+    menEEHits_ = dbe_->book1D(histo, histo, 50, 0., 5000.) ; 
 
     sprintf (histo, "EcalSimHitsTask Barrel occupancy" ) ;
     meEBoccupancy_ = dbe_->book2D(histo, histo, 360, 0., 360., 170, -85., 85.);
@@ -160,25 +160,25 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meEELongitudinalShower_ = dbe_->bookProfile(histo, histo, 26,0,26, 100, 0, 3000);
 
     sprintf (histo, "EcalSimHitsTask Barrel EB hit energy spectrum" );
-    meEBhitEnergy_ = dbe_->book1D(histo, histo, 100000, 0., 1000.);
+    meEBhitEnergy_ = dbe_->book1D(histo, histo, 4000, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Endcap EE hit energy spectrum" );
-    meEEhitEnergy_ = dbe_->book1D(histo, histo, 100000, 0., 1000.);
+    meEEhitEnergy_ = dbe_->book1D(histo, histo, 4000, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E1" ) ;
-    meEBe1_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEBe1_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E4" ) ;
-    meEBe4_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEBe4_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E9" ) ;
-    meEBe9_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEBe9_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E16" ) ;
-    meEBe16_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEBe16_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E25" ) ;
-    meEBe25_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEBe25_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Barrel E1oE4" ) ;
     meEBe1oe4_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
@@ -199,19 +199,19 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meEBe9oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
     sprintf (histo, "EcalSimHitsTask Endcap E1" ) ;
-    meEEe1_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEEe1_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Endcap E4" ) ;
-    meEEe4_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEEe4_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Endcap E9" ) ;
-    meEEe9_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEEe9_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Endcap E16" ) ;
-    meEEe16_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEEe16_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Endcap E25" ) ;
-    meEEe25_ = dbe_->book1D(histo, histo, 1000, 0., 1000.);
+    meEEe25_ = dbe_->book1D(histo, histo, 400, 0., 400.);
 
     sprintf (histo, "EcalSimHitsTask Endcap E1oE4" ) ;
     meEEe1oe4_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
@@ -232,16 +232,16 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
     meEEe9oe25_ = dbe_->book1D(histo, histo, 100, 0.4, 1.1);
 
     sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 1 multiplicity z+" ) ;
-    menESHits1zp_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+    menESHits1zp_ = dbe_->book1D(histo, histo, 50, 0., 50. ) ;
 
     sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 2 multiplicity z+" ) ;
-    menESHits2zp_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+    menESHits2zp_ = dbe_->book1D(histo, histo, 50, 0., 50. ) ;
 
     sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 1 multiplicity z-" ) ;
-    menESHits1zm_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+    menESHits1zm_ = dbe_->book1D(histo, histo, 50, 0., 50. ) ;
 
     sprintf (histo, "EcalSimHitsTask Preshower ES hits layer 2 multiplicity z-" ) ;
-    menESHits2zm_ = dbe_->book1D(histo, histo, 100, 0., 1000. ) ;
+    menESHits2zm_ = dbe_->book1D(histo, histo, 50, 0., 50. ) ;
 
     sprintf (histo, "EcalSimHitsTask Preshower energy ES hits layer 1 z+" ) ;
     meESEnergyHits1zp_ = dbe_->book1D(histo, histo, 100, 0., 0.001 ) ;
@@ -305,7 +305,10 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   e.getByLabel("SimG4Object","EcalHitsEE",EcalHitsEE);
   e.getByLabel("SimG4Object","EcalHitsES",EcalHitsES);
 
-  e.getByLabel("SimG4Object","EcalValidInfo",MyPEcalValidInfo);
+  bool isLongitudinal = true;
+  try {
+    e.getByLabel("SimG4Object","EcalValidInfo",MyPEcalValidInfo);
+  } catch ( cms::Exception &e ) { isLongitudinal = false; }
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
   theSimVertexes.insert(theSimVertexes.end(),SimVtx->begin(),SimVtx->end());
@@ -581,16 +584,18 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 
    if (meESEnergyFraction_) meESEnergyFraction_->Fill(fracES);
 
-   if ( MyPEcalValidInfo->eb1x1() > 0. ) {
-     vector<float>  BX0 = MyPEcalValidInfo->bX0();
-     for (int ii=0;ii< 26;ii++ ) {
-       if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
+   if ( isLongitudinal ) {
+     if ( MyPEcalValidInfo->eb1x1() > 0. ) {
+       vector<float>  BX0 = MyPEcalValidInfo->bX0();
+       for (int ii=0;ii< 26;ii++ ) {
+         if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
+       }
      }
-   }
-   if ( MyPEcalValidInfo->ee1x1() > 0. ) {
-     vector<float>  EX0 = MyPEcalValidInfo->eX0();
-     for (int ii=0;ii< 26;ii++ ) {
-       if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
+     if ( MyPEcalValidInfo->ee1x1() > 0. ) {
+       vector<float>  EX0 = MyPEcalValidInfo->eX0();
+       for (int ii=0;ii< 26;ii++ ) {
+         if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
+       }
      }
    }
      
