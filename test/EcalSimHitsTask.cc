@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/04/10 08:20:02 $
- * $Revision: 1.13 $
+ * $Date: 2006/04/19 16:23:38 $
+ * $Revision: 1.14 $
  * \author F. Cossutti
  *
 */
@@ -282,7 +282,7 @@ void EcalSimHitsTask::endJob(){
 void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 
   LogInfo("EventInfo") << " Run = " << e.id().run() << " Event = " << e.id().event();
-
+  
   vector<PCaloHit> theEBCaloHits;
   vector<PCaloHit> theEECaloHits;
   vector<PCaloHit> theESCaloHits;
@@ -301,10 +301,19 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   e.getByLabel(HepMCLabel, MCEvt);
   e.getByLabel(SimTkLabel,SimTk);
   e.getByLabel(SimVtxLabel,SimVtx);
-  e.getByLabel("SimG4Object","EcalHitsEB",EcalHitsEB);
-  e.getByLabel("SimG4Object","EcalHitsEE",EcalHitsEE);
-  e.getByLabel("SimG4Object","EcalHitsES",EcalHitsES);
-
+  bool isBarrel = true;
+  try {
+    e.getByLabel("SimG4Object","EcalHitsEB",EcalHitsEB);
+  } catch ( cms::Exception &e ) { isBarrel = false; }
+  bool isEndcap = true;
+  try {
+    e.getByLabel("SimG4Object","EcalHitsEE",EcalHitsEE);
+  } catch ( cms::Exception &e ) { isEndcap = false; }
+  bool isPreshower = true;
+  try {
+    e.getByLabel("SimG4Object","EcalHitsES",EcalHitsES);
+  } catch ( cms::Exception &e ) { isPreshower = false; }
+  
   bool isLongitudinal = true;
   try {
     e.getByLabel("SimG4Object","EcalValidInfo",MyPEcalValidInfo);
@@ -312,9 +321,9 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
   theSimVertexes.insert(theSimVertexes.end(),SimVtx->begin(),SimVtx->end());
-  theEBCaloHits.insert(theEBCaloHits.end(), EcalHitsEB->begin(), EcalHitsEB->end());
-  theEECaloHits.insert(theEECaloHits.end(), EcalHitsEE->begin(), EcalHitsEE->end());
-  theESCaloHits.insert(theESCaloHits.end(), EcalHitsES->begin(), EcalHitsES->end());
+  if ( isBarrel ) theEBCaloHits.insert(theEBCaloHits.end(), EcalHitsEB->begin(), EcalHitsEB->end());
+  if ( isEndcap ) theEECaloHits.insert(theEECaloHits.end(), EcalHitsEE->begin(), EcalHitsEE->end());
+  if ( isPreshower ) theESCaloHits.insert(theESCaloHits.end(), EcalHitsES->begin(), EcalHitsES->end());
 
   for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
         p != MCEvt->GetEvent()->particles_end(); ++p ) {
@@ -333,272 +342,287 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
     if (meGunPhi_) meGunPhi_->Fill(hphi);
 
   }
-
+  
   int nvtx = 0;
   for (vector<EmbdSimVertex>::iterator isimvtx = theSimVertexes.begin();
        isimvtx != theSimVertexes.end(); ++isimvtx){
     nvtx++;
     LogDebug("EventInfo") <<" Vertex index = " << nvtx << " vertex dump: " << *isimvtx;
   }
-
+  
   for (vector<EmbdSimTrack>::iterator isimtrk = theSimTracks.begin();
        isimtrk != theSimTracks.end(); ++isimtrk){
     LogDebug("EventInfo") <<" Starting vertex index = " <<isimtrk->vertIndex() << " track dump: " << *isimtrk ; 
   }
+  
+  double EBEnergy_ = 0.;
+  double EEEnergy_ = 0.;
+  double ESEnergy_ = 0.;
+  std::map<unsigned int, std::vector<PCaloHit>,std::less<unsigned int> > CaloHitMap;
+  
+  if ( isBarrel ) {
+    
+    double eb1 = 0.0;
+    double eb4 = 0.0;
+    double eb9 = 0.0;
+    double eb16 = 0.0;
+    double eb25 = 0.0;
+    
+    MapType ebmap;
+    uint32_t nEBHits = 0;
+    
+    for (std::vector<PCaloHit>::iterator isim = theEBCaloHits.begin();
+         isim != theEBCaloHits.end(); ++isim){
+      CaloHitMap[(*isim).id()].push_back((*isim));
+      
+      EBDetId ebid (isim->id()) ;
+      
+      LogDebug("HitInfo") 
+        <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"	
+        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
+        << "EBDetId = " << ebid.ieta() << " " << ebid.iphi();
+      
+      if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.iphi(), ebid.ieta() );
+      
+      uint32_t crystid = ebid.rawId();
+      ebmap[crystid] += isim->energy();
+      
+      EBEnergy_ += isim->energy();
+      nEBHits++;
+      meEBhitEnergy_->Fill(isim->energy());
+      
+    }
+    
+    if (menEBHits_) menEBHits_->Fill(nEBHits);
+    
+    if (nEBHits > 0 ) {
+      
+      uint32_t  ebcenterid = getUnitWithMaxEnergy(ebmap);
+      EBDetId myEBid(ebcenterid);
+      int bx = myEBid.ietaAbs();
+      int by = myEBid.iphi();
+      int bz = myEBid.zside();
+      eb1 =  energyInMatrixEB(1,1,bx,by,bz,ebmap);
+      if (meEBe1_) meEBe1_->Fill(eb1);
+      eb9 =  energyInMatrixEB(3,3,bx,by,bz,ebmap);
+      if (meEBe9_) meEBe9_->Fill(eb9);
+      eb25=  energyInMatrixEB(5,5,bx,by,bz,ebmap);
+      if (meEBe25_) meEBe25_->Fill(eb25);
+      
+      MapType  newebmap;
+      if( fillEBMatrix(3,3,bx,by,bz,newebmap, ebmap)){
+        eb4 = eCluster2x2(newebmap);
+        if (meEBe4_) meEBe4_->Fill(eb4);
+      }
+      if( fillEBMatrix(5,5,bx,by,bz,newebmap, ebmap)){
+        eb16 = eCluster4x4(eb9,newebmap); 
+        if (meEBe16_) meEBe16_->Fill(eb16);
+      }
+      
+      if (meEBe1oe4_ && eb4 != 0. ) meEBe1oe4_->Fill(eb1/eb4);
+      if (meEBe4oe9_ && eb9 != 0. ) meEBe4oe9_->Fill(eb4/eb9);
+      if (meEBe9oe16_ && eb16 != 0. ) meEBe9oe16_->Fill(eb9/eb16);
+      if (meEBe16oe25_ && eb25 != 0. ) meEBe16oe25_->Fill(eb16/eb25);
+      if (meEBe1oe25_ && eb25 != 0. ) meEBe1oe25_->Fill(eb1/eb25);
+      if (meEBe9oe25_ && eb25 != 0. ) meEBe9oe25_->Fill(eb9/eb25);
+      
+    }
+    
+  }
 
-   std::map<unsigned int, std::vector<PCaloHit>,std::less<unsigned int> > CaloHitMap;
-
-   double eb1 = 0.0;
-   double eb4 = 0.0;
-   double eb9 = 0.0;
-   double eb16 = 0.0;
-   double eb25 = 0.0;
-
-   MapType ebmap;
-   uint32_t nEBHits = 0;
-   double EBEnergy_ = 0.;
-
-   for (std::vector<PCaloHit>::iterator isim = theEBCaloHits.begin();
-	isim != theEBCaloHits.end(); ++isim){
-     CaloHitMap[(*isim).id()].push_back((*isim));
-     
-     EBDetId ebid (isim->id()) ;
-
-     LogDebug("HitInfo") 
-       <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"	
-       << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
-       << "EBDetId = " << ebid.ieta() << " " << ebid.iphi();
-
-     if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.iphi(), ebid.ieta() );
-
-     uint32_t crystid = ebid.rawId();
-     ebmap[crystid] += isim->energy();
-
-     EBEnergy_ += isim->energy();
-     nEBHits++;
-     meEBhitEnergy_->Fill(isim->energy());
-
-   }
-
-   if (menEBHits_) menEBHits_->Fill(nEBHits);
-
-   if (nEBHits > 0 ) {
-
-     uint32_t  ebcenterid = getUnitWithMaxEnergy(ebmap);
-     EBDetId myEBid(ebcenterid);
-     int bx = myEBid.ietaAbs();
-     int by = myEBid.iphi();
-     int bz = myEBid.zside();
-     eb1 =  energyInMatrixEB(1,1,bx,by,bz,ebmap);
-     if (meEBe1_) meEBe1_->Fill(eb1);
-     eb9 =  energyInMatrixEB(3,3,bx,by,bz,ebmap);
-     if (meEBe9_) meEBe9_->Fill(eb9);
-     eb25=  energyInMatrixEB(5,5,bx,by,bz,ebmap);
-     if (meEBe25_) meEBe25_->Fill(eb25);
-     
-     MapType  newebmap;
-     if( fillEBMatrix(3,3,bx,by,bz,newebmap, ebmap)){
-       eb4 = eCluster2x2(newebmap);
-       if (meEBe4_) meEBe4_->Fill(eb4);
-     }
-     if( fillEBMatrix(5,5,bx,by,bz,newebmap, ebmap)){
-       eb16 = eCluster4x4(eb9,newebmap); 
-       if (meEBe16_) meEBe16_->Fill(eb16);
-     }
-     
-     if (meEBe1oe4_ && eb4 != 0. ) meEBe1oe4_->Fill(eb1/eb4);
-     if (meEBe4oe9_ && eb9 != 0. ) meEBe4oe9_->Fill(eb4/eb9);
-     if (meEBe9oe16_ && eb16 != 0. ) meEBe9oe16_->Fill(eb9/eb16);
-     if (meEBe16oe25_ && eb25 != 0. ) meEBe16oe25_->Fill(eb16/eb25);
-     if (meEBe1oe25_ && eb25 != 0. ) meEBe1oe25_->Fill(eb1/eb25);
-     if (meEBe9oe25_ && eb25 != 0. ) meEBe9oe25_->Fill(eb9/eb25);
-     
-   }
-
-   double ee1 = 0.0;
-   double ee4 = 0.0;
-   double ee9 = 0.0;
-   double ee16 = 0.0;
-   double ee25 = 0.0;
-
-   MapType eemap;
-   uint32_t nEEHits = 0;
-   double EEEnergy_ = 0.;
-   double EEetzp_ = 0.;
-   double EEetzm_ = 0.;
+  double EEetzp_ = 0.;
+  double EEetzm_ = 0.;
+  
+  if ( isEndcap ) {
+    
+    double ee1 = 0.0;
+    double ee4 = 0.0;
+    double ee9 = 0.0;
+    double ee16 = 0.0;
+    double ee25 = 0.0;
+    
+    MapType eemap;
+    uint32_t nEEHits = 0;
+    
+    for (std::vector<PCaloHit>::iterator isim = theEECaloHits.begin();
+         isim != theEECaloHits.end(); ++isim){
+      CaloHitMap[(*isim).id()].push_back((*isim));
+      
+      EEDetId eeid (isim->id()) ;
+      
+      LogDebug("HitInfo")
+        <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
+        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
+        << "EEDetId side " << eeid.zside() << " = " << eeid.ix() << " " << eeid.iy() ;
+      
+      if (eeid.zside() > 0 ) {
+        EEetzp_ += isim->energy();
+        if (meEEoccupancyzp_) meEEoccupancyzp_->Fill( eeid.ix(), eeid.iy() );
+      }
+      else if (eeid.zside() < 0 ) {
+        EEetzm_ += isim->energy();
+        if (meEEoccupancyzm_) meEEoccupancyzm_->Fill( eeid.ix(), eeid.iy() );
+      }
+      
+      uint32_t crystid = eeid.rawId();
+      eemap[crystid] += isim->energy();
+      
+      nEEHits++;
+      meEEhitEnergy_->Fill(isim->energy());
+      EEEnergy_ += isim->energy();
+      
+    }
+    
+    if (menEEHits_) menEEHits_->Fill(nEEHits);
+    
+    if (nEEHits > 0) {
+      
+      uint32_t  eecenterid = getUnitWithMaxEnergy(eemap);
+      EEDetId myEEid(eecenterid);
+      int bx = myEEid.ix();
+      int by = myEEid.iy();
+      int bz = myEEid.zside();
+      ee1 =  energyInMatrixEE(1,1,bx,by,bz,eemap);
+      if (meEEe1_) meEEe1_->Fill(ee1);
+      ee9 =  energyInMatrixEE(3,3,bx,by,bz,eemap);
+      if (meEEe9_) meEEe9_->Fill(ee9);
+      ee25=  energyInMatrixEE(5,5,bx,by,bz,eemap);
+      if (meEEe25_) meEEe25_->Fill(ee25);
+      
+      MapType  neweemap;
+      if( fillEEMatrix(3,3,bx,by,bz,neweemap, eemap)){
+        ee4 = eCluster2x2(neweemap);
+        if (meEEe4_) meEEe4_->Fill(ee4);
+      }
+      if( fillEEMatrix(5,5,bx,by,bz,neweemap, eemap)){
+        ee16 = eCluster4x4(ee9,neweemap); 
+        if (meEEe16_) meEEe16_->Fill(ee16);
+      }
+      
+      if (meEEe1oe4_ && ee4 != 0. ) meEEe1oe4_->Fill(ee1/ee4);
+      if (meEEe4oe9_ && ee9 != 0. ) meEEe4oe9_->Fill(ee4/ee9);
+      if (meEEe9oe16_ && ee16 != 0. ) meEEe9oe16_->Fill(ee9/ee16);
+      if (meEEe16oe25_ && ee25 != 0. ) meEEe16oe25_->Fill(ee16/ee25);
+      if (meEEe1oe25_ && ee25 != 0. ) meEEe1oe25_->Fill(ee1/ee25);
+      if (meEEe9oe25_ && ee25 != 0. ) meEEe9oe25_->Fill(ee9/ee25);
+      
+    }
+    
+  }
+  
+  if ( isPreshower ) {
+    
+    uint32_t nESHits1zp = 0;
+    uint32_t nESHits1zm = 0;
+    uint32_t nESHits2zp = 0;
+    uint32_t nESHits2zm = 0;
+    double ESet1zp_ = 0.;
+    double ESet2zp_ = 0.;
+    double ESet1zm_ = 0.;
+    double ESet2zm_ = 0.;
+    
+    for (std::vector<PCaloHit>::iterator isim = theESCaloHits.begin();
+         isim != theESCaloHits.end(); ++isim){
+      CaloHitMap[(*isim).id()].push_back((*isim));
+      
+      ESDetId esid (isim->id()) ;
+      
+      LogDebug("HitInfo")
+        <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
+        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
+        << "ESDetId: z side " << esid.zside() << "  plane " << esid.plane() << esid.six() << ',' << esid.siy() << ':' << esid.strip();
+      
+      
+      ESEnergy_ += isim->energy();
+      
+      if (esid.plane() == 1 ) { 
+        if (esid.zside() > 0 ) {
+          nESHits1zp++ ;
+          ESet1zp_ += isim->energy();
+          if (meESEnergyHits1zp_) meESEnergyHits1zp_->Fill(isim->energy()) ; 
+        }
+        else if (esid.zside() < 0 ) {
+          nESHits1zm++ ; 
+          ESet1zm_ += isim->energy();
+          if (meESEnergyHits1zm_) meESEnergyHits1zm_->Fill(isim->energy()) ; 
+        }
+      }
+      else if (esid.plane() == 2 ) {
+        if (esid.zside() > 0 ) {
+          nESHits2zp++ ; 
+          ESet2zp_ += isim->energy();
+          if (meESEnergyHits2zp_) meESEnergyHits2zp_->Fill(isim->energy()) ; 
+        }
+        else if (esid.zside() < 0 ) {
+          nESHits2zm++ ; 
+          ESet2zm_ += isim->energy();
+          if (meESEnergyHits2zm_) meESEnergyHits2zm_->Fill(isim->energy()) ; 
+        }
+      }
+      
+    }
+    
+    if (menESHits1zp_) menESHits1zp_->Fill(nESHits1zp);
+    if (menESHits1zm_) menESHits1zm_->Fill(nESHits1zm);
+    
+    if (menESHits2zp_) menESHits2zp_->Fill(nESHits2zp);
+    if (menESHits2zm_) menESHits2zm_->Fill(nESHits2zm);
    
-   for (std::vector<PCaloHit>::iterator isim = theEECaloHits.begin();
-	isim != theEECaloHits.end(); ++isim){
-     CaloHitMap[(*isim).id()].push_back((*isim));
-     
-     EEDetId eeid (isim->id()) ;
-     
-     LogDebug("HitInfo")
-       <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
-       << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
-       << "EEDetId side " << eeid.zside() << " = " << eeid.ix() << " " << eeid.iy() ;
-     
-     if (eeid.zside() > 0 ) {
-       EEetzp_ += isim->energy();
-       if (meEEoccupancyzp_) meEEoccupancyzp_->Fill( eeid.ix(), eeid.iy() );
-     }
-     else if (eeid.zside() < 0 ) {
-       EEetzm_ += isim->energy();
-       if (meEEoccupancyzm_) meEEoccupancyzm_->Fill( eeid.ix(), eeid.iy() );
-     }
-
-     uint32_t crystid = eeid.rawId();
-     eemap[crystid] += isim->energy();
-
-     nEEHits++;
-     meEEhitEnergy_->Fill(isim->energy());
-     EEEnergy_ += isim->energy();
-
-   }
-
-   if (menEEHits_) menEEHits_->Fill(nEEHits);
-
-   if (nEEHits > 0) {
-
-     uint32_t  eecenterid = getUnitWithMaxEnergy(eemap);
-     EEDetId myEEid(eecenterid);
-     int bx = myEEid.ix();
-     int by = myEEid.iy();
-     int bz = myEEid.zside();
-     ee1 =  energyInMatrixEE(1,1,bx,by,bz,eemap);
-     if (meEEe1_) meEEe1_->Fill(ee1);
-     ee9 =  energyInMatrixEE(3,3,bx,by,bz,eemap);
-     if (meEEe9_) meEEe9_->Fill(ee9);
-     ee25=  energyInMatrixEE(5,5,bx,by,bz,eemap);
-     if (meEEe25_) meEEe25_->Fill(ee25);
-     
-     MapType  neweemap;
-     if( fillEEMatrix(3,3,bx,by,bz,neweemap, eemap)){
-       ee4 = eCluster2x2(neweemap);
-       if (meEEe4_) meEEe4_->Fill(ee4);
-     }
-     if( fillEEMatrix(5,5,bx,by,bz,neweemap, eemap)){
-       ee16 = eCluster4x4(ee9,neweemap); 
-       if (meEEe16_) meEEe16_->Fill(ee16);
-     }
-     
-     if (meEEe1oe4_ && ee4 != 0. ) meEEe1oe4_->Fill(ee1/ee4);
-     if (meEEe4oe9_ && ee9 != 0. ) meEEe4oe9_->Fill(ee4/ee9);
-     if (meEEe9oe16_ && ee16 != 0. ) meEEe9oe16_->Fill(ee9/ee16);
-     if (meEEe16oe25_ && ee25 != 0. ) meEEe16oe25_->Fill(ee16/ee25);
-     if (meEEe1oe25_ && ee25 != 0. ) meEEe1oe25_->Fill(ee1/ee25);
-     if (meEEe9oe25_ && ee25 != 0. ) meEEe9oe25_->Fill(ee9/ee25);
-     
-   }
-
-   uint32_t nESHits1zp = 0;
-   uint32_t nESHits1zm = 0;
-   uint32_t nESHits2zp = 0;
-   uint32_t nESHits2zm = 0;
-   double ESEnergy_ = 0.;
-   double ESet1zp_ = 0.;
-   double ESet2zp_ = 0.;
-   double ESet1zm_ = 0.;
-   double ESet2zm_ = 0.;
-   
-   for (std::vector<PCaloHit>::iterator isim = theESCaloHits.begin();
-	isim != theESCaloHits.end(); ++isim){
-     CaloHitMap[(*isim).id()].push_back((*isim));
-     
-     ESDetId esid (isim->id()) ;
-     
-     LogDebug("HitInfo")
-       <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
-       << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
-       << "ESDetId: z side " << esid.zside() << "  plane " << esid.plane() << esid.six() << ',' << esid.siy() << ':' << esid.strip();
-
-     
-     ESEnergy_ += isim->energy();
-     
-     if (esid.plane() == 1 ) { 
-       if (esid.zside() > 0 ) {
-         nESHits1zp++ ;
-         ESet1zp_ += isim->energy();
-         if (meESEnergyHits1zp_) meESEnergyHits1zp_->Fill(isim->energy()) ; 
-       }
-       else if (esid.zside() < 0 ) {
-         nESHits1zm++ ; 
-         ESet1zm_ += isim->energy();
-         if (meESEnergyHits1zm_) meESEnergyHits1zm_->Fill(isim->energy()) ; 
-       }
-     }
-     else if (esid.plane() == 2 ) {
-       if (esid.zside() > 0 ) {
-         nESHits2zp++ ; 
-         ESet2zp_ += isim->energy();
-         if (meESEnergyHits2zp_) meESEnergyHits2zp_->Fill(isim->energy()) ; 
-       }
-       else if (esid.zside() < 0 ) {
-         nESHits2zm++ ; 
-         ESet2zm_ += isim->energy();
-         if (meESEnergyHits2zm_) meESEnergyHits2zm_->Fill(isim->energy()) ; 
-       }
-     }
-
-   }
-
-   if (menESHits1zp_) menESHits1zp_->Fill(nESHits1zp);
-   if (menESHits1zm_) menESHits1zm_->Fill(nESHits1zm);
-
-   if (menESHits2zp_) menESHits2zp_->Fill(nESHits2zp);
-   if (menESHits2zm_) menESHits2zm_->Fill(nESHits2zm);
-
-   // Fill the EE vs ES plots only for particles in the Endcap acceptance
-   // assuming at most 2 particles back to back...
-
-   for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
-         p != MCEvt->GetEvent()->particles_end(); ++p ) {
-     
-     Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
-     double htheta = hmom.theta();
-     double heta = -log(tan(htheta * 0.5));
-
-     if ( heta > 1.653 && heta < 2.6 ) {
-       if (meEEvsESEnergyzp_) meEEvsESEnergyzp_->Fill((ESet1zp_+0.7*ESet2zp_)/0.00009,EEetzp_);
-     }
-     if ( heta < -1.653 && heta > -2.6 ) {
-       if (meEEvsESEnergyzm_) meEEvsESEnergyzm_->Fill((ESet1zm_+0.7*ESet2zm_)/0.00009,EEetzm_);
-     }
-   
-   }
-
-   double etot = EBEnergy_ + EEEnergy_ + ESEnergy_ ;
-   double fracEB = 0.0;
-   double fracEE = 0.0;
-   double fracES = 0.0;
-
-   if (etot>0.0) { 
-     fracEB = EBEnergy_/etot; 
-     fracEE = EEEnergy_/etot; 
-     fracES = ESEnergy_/etot; 
-   }
-
-   if (meEBEnergyFraction_) meEBEnergyFraction_->Fill(fracEB);
-
-   if (meEEEnergyFraction_) meEEEnergyFraction_->Fill(fracEE);
-
-   if (meESEnergyFraction_) meESEnergyFraction_->Fill(fracES);
-
-   if ( isLongitudinal ) {
-     if ( MyPEcalValidInfo->eb1x1() > 0. ) {
-       vector<float>  BX0 = MyPEcalValidInfo->bX0();
-       for (int ii=0;ii< 26;ii++ ) {
-         if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
-       }
-     }
-     if ( MyPEcalValidInfo->ee1x1() > 0. ) {
-       vector<float>  EX0 = MyPEcalValidInfo->eX0();
-       for (int ii=0;ii< 26;ii++ ) {
-         if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
-       }
-     }
-   }
-     
+    if ( isEndcap ) {
+ 
+      // Fill the EE vs ES plots only for particles in the Endcap acceptance
+      // assuming at most 2 particles back to back...
+      
+      for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
+            p != MCEvt->GetEvent()->particles_end(); ++p ) {
+        
+        Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
+        double htheta = hmom.theta();
+        double heta = -log(tan(htheta * 0.5));
+        
+        if ( heta > 1.653 && heta < 2.6 ) {
+          if (meEEvsESEnergyzp_) meEEvsESEnergyzp_->Fill((ESet1zp_+0.7*ESet2zp_)/0.00009,EEetzp_);
+        }
+        if ( heta < -1.653 && heta > -2.6 ) {
+          if (meEEvsESEnergyzm_) meEEvsESEnergyzm_->Fill((ESet1zm_+0.7*ESet2zm_)/0.00009,EEetzm_);
+        }
+      }
+    }
+    
+  }
+  
+  double etot = EBEnergy_ + EEEnergy_ + ESEnergy_ ;
+  double fracEB = 0.0;
+  double fracEE = 0.0;
+  double fracES = 0.0;
+  
+  if (etot>0.0) { 
+    fracEB = EBEnergy_/etot; 
+    fracEE = EEEnergy_/etot; 
+    fracES = ESEnergy_/etot; 
+  }
+  
+  if (meEBEnergyFraction_) meEBEnergyFraction_->Fill(fracEB);
+  
+  if (meEEEnergyFraction_) meEEEnergyFraction_->Fill(fracEE);
+  
+  if (meESEnergyFraction_) meESEnergyFraction_->Fill(fracES);
+  
+  if ( isLongitudinal ) {
+    if ( MyPEcalValidInfo->eb1x1() > 0. ) {
+      vector<float>  BX0 = MyPEcalValidInfo->bX0();
+      for (int ii=0;ii< 26;ii++ ) {
+        if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
+      }
+    }
+    if ( MyPEcalValidInfo->ee1x1() > 0. ) {
+      vector<float>  EX0 = MyPEcalValidInfo->eX0();
+      for (int ii=0;ii< 26;ii++ ) {
+        if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
+      }
+    }
+  }
+  
 }
 
 float EcalSimHitsTask::energyInMatrixEB(int nCellInEta, int nCellInPhi,
