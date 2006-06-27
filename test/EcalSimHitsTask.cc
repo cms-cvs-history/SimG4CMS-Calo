@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/04/19 16:23:38 $
- * $Revision: 1.14 $
+ * $Date: 2006/05/16 16:06:39 $
+ * $Revision: 1.15 $
  * \author F. Cossutti
  *
 */
@@ -14,8 +14,8 @@
 
 EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   HepMCLabel(ps.getUntrackedParameter("moduleLabelMC",string("PythiaSource"))),
-  SimTkLabel(ps.getUntrackedParameter("moduleLabelTk",string("EmbdSimTrack"))),
-  SimVtxLabel(ps.getUntrackedParameter("moduleLabelVtx",string("EmbdSimVertex"))){
+  SimTkLabel(ps.getUntrackedParameter("moduleLabelTk",string("SimTrack"))),
+  SimVtxLabel(ps.getUntrackedParameter("moduleLabelVtx",string("SimVertex"))){
 
  
   // DQM ROOT output
@@ -286,12 +286,12 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   vector<PCaloHit> theEBCaloHits;
   vector<PCaloHit> theEECaloHits;
   vector<PCaloHit> theESCaloHits;
-  vector<EmbdSimTrack> theSimTracks;
-  vector<EmbdSimVertex> theSimVertexes;
+  vector<SimTrack> theSimTracks;
+  vector<SimVertex> theSimVertexes;
 
   Handle<HepMCProduct> MCEvt;
-  Handle<EmbdSimTrackContainer> SimTk;
-  Handle<EmbdSimVertexContainer> SimVtx;
+  Handle<SimTrackContainer> SimTk;
+  Handle<SimVertexContainer> SimVtx;
   Handle<PCaloHitContainer> EcalHitsEB;
   Handle<PCaloHitContainer> EcalHitsEE;
   Handle<PCaloHitContainer> EcalHitsES;
@@ -344,13 +344,13 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   }
   
   int nvtx = 0;
-  for (vector<EmbdSimVertex>::iterator isimvtx = theSimVertexes.begin();
+  for (vector<SimVertex>::iterator isimvtx = theSimVertexes.begin();
        isimvtx != theSimVertexes.end(); ++isimvtx){
     nvtx++;
     LogDebug("EventInfo") <<" Vertex index = " << nvtx << " vertex dump: " << *isimvtx;
   }
   
-  for (vector<EmbdSimTrack>::iterator isimtrk = theSimTracks.begin();
+  for (vector<SimTrack>::iterator isimtrk = theSimTracks.begin();
        isimtrk != theSimTracks.end(); ++isimtrk){
     LogDebug("EventInfo") <<" Starting vertex index = " <<isimtrk->vertIndex() << " track dump: " << *isimtrk ; 
   }
