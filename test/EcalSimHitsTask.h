@@ -4,8 +4,8 @@
 /*
  * \file EcalSimHitsTask.h
  *
- * $Date: 2006/03/03 17:26:03 $
- * $Revision: 1.2 $
+ * $Date: 2006/06/27 12:32:36 $
+ * $Revision: 1.3 $
  * \author F. Cossutti
  *
 */
@@ -90,8 +90,11 @@ private:
  float eCluster4x4(float e33,MapType& themap);
  
  string HepMCLabel;
- string SimTkLabel;
- string SimVtxLabel;
+ string g4InfoLabel;
+ string EBDigiCollection;
+ string EEDigiCollection;
+ string ESDigiCollection;
+ string ValidationCollection;
  
  bool verbose_;
  

@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/06/27 12:32:36 $
- * $Revision: 1.16 $
+ * $Date: 2006/08/02 08:12:46 $
+ * $Revision: 1.17 $
  * \author F. Cossutti
  *
 */
@@ -14,8 +14,11 @@
 
 EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   HepMCLabel(ps.getUntrackedParameter("moduleLabelMC",string("PythiaSource"))),
-  SimTkLabel(ps.getUntrackedParameter("moduleLabelTk",string("SimTrack"))),
-  SimVtxLabel(ps.getUntrackedParameter("moduleLabelVtx",string("SimVertex"))){
+  g4InfoLabel(ps.getUntrackedParameter("moduleLabelG4",string("g4SimHits"))),
+  EBDigiCollection(ps.getUntrackedParameter("EBDigiCollection",string("EcalHitsEB"))),
+  EEDigiCollection(ps.getUntrackedParameter("EEDigiCollection",string("EcalHitsEE"))),
+  ESDigiCollection(ps.getUntrackedParameter("ESDigiCollection",string("EcalHitsES"))),
+  ValidationCollection(ps.getUntrackedParameter("ValidationCollection",string("EcalValidInfo"))){
 
  
   // DQM ROOT output
@@ -299,24 +302,24 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   Handle<PEcalValidInfo> MyPEcalValidInfo;
 
   e.getByLabel(HepMCLabel, MCEvt);
-  e.getByLabel(SimTkLabel,SimTk);
-  e.getByLabel(SimVtxLabel,SimVtx);
+  e.getByLabel(g4InfoLabel,SimTk);
+  e.getByLabel(g4InfoLabel,SimVtx);
   bool isBarrel = true;
   try {
-    e.getByLabel("g4SimHits","EcalHitsEB",EcalHitsEB);
+    e.getByLabel(g4InfoLabel,EBDigiCollection,EcalHitsEB);
   } catch ( cms::Exception &e ) { isBarrel = false; }
   bool isEndcap = true;
   try {
-    e.getByLabel("g4SimHits","EcalHitsEE",EcalHitsEE);
+    e.getByLabel(g4InfoLabel,EEDigiCollection,EcalHitsEE);
   } catch ( cms::Exception &e ) { isEndcap = false; }
   bool isPreshower = true;
   try {
-    e.getByLabel("g4SimHits","EcalHitsES",EcalHitsES);
+    e.getByLabel(g4InfoLabel,ESDigiCollection,EcalHitsES);
   } catch ( cms::Exception &e ) { isPreshower = false; }
   
   bool isLongitudinal = true;
   try {
-    e.getByLabel("g4SimHits","EcalValidInfo",MyPEcalValidInfo);
+    e.getByLabel(g4InfoLabel,ValidationCollection,MyPEcalValidInfo);
   } catch ( cms::Exception &e ) { isLongitudinal = false; }
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
