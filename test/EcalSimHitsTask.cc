@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/05/16 16:06:39 $
- * $Revision: 1.15 $
+ * $Date: 2006/06/27 12:32:36 $
+ * $Revision: 1.16 $
  * \author F. Cossutti
  *
 */
@@ -303,20 +303,20 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   e.getByLabel(SimVtxLabel,SimVtx);
   bool isBarrel = true;
   try {
-    e.getByLabel("SimG4Object","EcalHitsEB",EcalHitsEB);
+    e.getByLabel("g4SimHits","EcalHitsEB",EcalHitsEB);
   } catch ( cms::Exception &e ) { isBarrel = false; }
   bool isEndcap = true;
   try {
-    e.getByLabel("SimG4Object","EcalHitsEE",EcalHitsEE);
+    e.getByLabel("g4SimHits","EcalHitsEE",EcalHitsEE);
   } catch ( cms::Exception &e ) { isEndcap = false; }
   bool isPreshower = true;
   try {
-    e.getByLabel("SimG4Object","EcalHitsES",EcalHitsES);
+    e.getByLabel("g4SimHits","EcalHitsES",EcalHitsES);
   } catch ( cms::Exception &e ) { isPreshower = false; }
   
   bool isLongitudinal = true;
   try {
-    e.getByLabel("SimG4Object","EcalValidInfo",MyPEcalValidInfo);
+    e.getByLabel("g4SimHits","EcalValidInfo",MyPEcalValidInfo);
   } catch ( cms::Exception &e ) { isLongitudinal = false; }
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
