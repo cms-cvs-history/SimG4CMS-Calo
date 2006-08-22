@@ -4,8 +4,8 @@
 /*
  * \file EcalSimHitsTask.h
  *
- * $Date: 2006/06/27 12:32:36 $
- * $Revision: 1.3 $
+ * $Date: 2006/08/02 13:27:54 $
+ * $Revision: 1.4 $
  * \author F. Cossutti
  *
 */
@@ -91,9 +91,9 @@ private:
  
  string HepMCLabel;
  string g4InfoLabel;
- string EBDigiCollection;
- string EEDigiCollection;
- string ESDigiCollection;
+ string EBHitsCollection;
+ string EEHitsCollection;
+ string ESHitsCollection;
  string ValidationCollection;
  
  bool verbose_;

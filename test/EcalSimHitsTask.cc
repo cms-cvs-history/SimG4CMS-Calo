@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/08/02 08:12:46 $
- * $Revision: 1.17 $
+ * $Date: 2006/08/02 13:27:54 $
+ * $Revision: 1.18 $
  * \author F. Cossutti
  *
 */
@@ -13,12 +13,12 @@
 #include <DataFormats/EcalDetId/interface/ESDetId.h>
 
 EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
-  HepMCLabel(ps.getUntrackedParameter("moduleLabelMC",string("PythiaSource"))),
-  g4InfoLabel(ps.getUntrackedParameter("moduleLabelG4",string("g4SimHits"))),
-  EBDigiCollection(ps.getUntrackedParameter("EBDigiCollection",string("EcalHitsEB"))),
-  EEDigiCollection(ps.getUntrackedParameter("EEDigiCollection",string("EcalHitsEE"))),
-  ESDigiCollection(ps.getUntrackedParameter("ESDigiCollection",string("EcalHitsES"))),
-  ValidationCollection(ps.getUntrackedParameter("ValidationCollection",string("EcalValidInfo"))){
+  HepMCLabel(ps.getParameter<std::string>("moduleLabelMC")),
+  g4InfoLabel(ps.getParameter<std::string>("moduleLabelG4")),
+  EBHitsCollection(ps.getParameter<std::string>("EBHitsCollection")),
+  EEHitsCollection(ps.getParameter<std::string>("EEHitsCollection")),
+  ESHitsCollection(ps.getParameter<std::string>("ESHitsCollection")),
+  ValidationCollection(ps.getParameter<std::string>("ValidationCollection")){
 
  
   // DQM ROOT output
@@ -306,15 +306,15 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   e.getByLabel(g4InfoLabel,SimVtx);
   bool isBarrel = true;
   try {
-    e.getByLabel(g4InfoLabel,EBDigiCollection,EcalHitsEB);
+    e.getByLabel(g4InfoLabel,EBHitsCollection,EcalHitsEB);
   } catch ( cms::Exception &e ) { isBarrel = false; }
   bool isEndcap = true;
   try {
-    e.getByLabel(g4InfoLabel,EEDigiCollection,EcalHitsEE);
+    e.getByLabel(g4InfoLabel,EEHitsCollection,EcalHitsEE);
   } catch ( cms::Exception &e ) { isEndcap = false; }
   bool isPreshower = true;
   try {
-    e.getByLabel(g4InfoLabel,ESDigiCollection,EcalHitsES);
+    e.getByLabel(g4InfoLabel,ESHitsCollection,EcalHitsES);
   } catch ( cms::Exception &e ) { isPreshower = false; }
   
   bool isLongitudinal = true;
