@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/08/02 13:27:54 $
- * $Revision: 1.18 $
+ * $Date: 2006/08/22 09:18:44 $
+ * $Revision: 1.19 $
  * \author F. Cossutti
  *
 */
@@ -11,6 +11,7 @@
 #include <DataFormats/EcalDetId/interface/EBDetId.h>
 #include <DataFormats/EcalDetId/interface/EEDetId.h>
 #include <DataFormats/EcalDetId/interface/ESDetId.h>
+#include "FWCore/Utilities/interface/Exception.h"
 
 EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
   HepMCLabel(ps.getParameter<std::string>("moduleLabelMC")),
@@ -680,7 +681,7 @@ float EcalSimHitsTask::energyInMatrixEE(int nCellInX, int nCellInY,
       uint32_t index ;
       try {
         index = EEDetId(ix,iy,centralZ).rawId();
-      } catch ( std::runtime_error &e ) { continue ; }
+      } catch ( cms::Exception &e ) { continue ; }
       totalEnergy   += themap[index];
       ncristals     += 1;
     }
@@ -742,7 +743,7 @@ bool  EcalSimHitsTask::fillEEMatrix(int nCellInX, int nCellInY,
         uint32_t index ;
         try {
           index = EEDetId(ix,iy,CentralZ).rawId();
-        } catch ( std::runtime_error &e ) { continue ; }
+        } catch ( cms::Exception &e ) { continue ; }
         fillmap[i++] = themap[index];
       }
    }
