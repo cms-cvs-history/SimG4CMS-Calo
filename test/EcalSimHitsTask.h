@@ -4,8 +4,8 @@
 /*
  * \file EcalSimHitsTask.h
  *
- * $Date: 2006/08/02 13:27:54 $
- * $Revision: 1.4 $
+ * $Date: 2006/08/22 09:18:44 $
+ * $Revision: 1.5 $
  * \author F. Cossutti
  *
 */
@@ -26,6 +26,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/EncodedEventId/interface/EncodedEventId.h"
 #include "SimDataFormats/Track/interface/SimTrack.h"
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
 #include "SimDataFormats/Vertex/interface/SimVertex.h"
