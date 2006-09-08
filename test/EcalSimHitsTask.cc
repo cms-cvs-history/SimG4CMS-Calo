@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/08/22 09:18:44 $
- * $Revision: 1.19 $
+ * $Date: 2006/08/23 15:49:45 $
+ * $Revision: 1.20 $
  * \author F. Cossutti
  *
 */
@@ -350,13 +350,15 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   int nvtx = 0;
   for (vector<SimVertex>::iterator isimvtx = theSimVertexes.begin();
        isimvtx != theSimVertexes.end(); ++isimvtx){
-    nvtx++;
-    LogDebug("EventInfo") <<" Vertex index = " << nvtx << " vertex dump: " << *isimvtx;
+    LogDebug("EventInfo") <<" Vertex index = " << nvtx << " event Id = " << isimvtx->eventId().rawId() << "\n" << " vertex dump: " << *isimvtx ;
+    ++nvtx;
   }
   
+  int ntrk = 0;
   for (vector<SimTrack>::iterator isimtrk = theSimTracks.begin();
        isimtrk != theSimTracks.end(); ++isimtrk){
-    LogDebug("EventInfo") <<" Starting vertex index = " <<isimtrk->vertIndex() << " track dump: " << *isimtrk ; 
+         LogDebug("EventInfo") <<" Track index = " << ntrk << " track Id = " << isimtrk->trackId() << " event Id = " << isimtrk->eventId().rawId() << "\n" << " track dump: " << *isimtrk ; 
+    ++ntrk;
   }
   
   double EBEnergy_ = 0.;
@@ -382,9 +384,11 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
       EBDetId ebid (isim->id()) ;
       
       LogDebug("HitInfo") 
-        <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"	
-        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
-        << "EBDetId = " << ebid.ieta() << " " << ebid.iphi();
+        << " CaloHit " << isim->getName() << "\n" 
+        << " DetID = "<<isim->id()<< " EBDetId = " << ebid.ieta() << " " << ebid.iphi() << "\n"	
+        << " Time = " << isim->time() << "\n"
+        << " Track Id = " << isim->geantTrackId() << "\n"
+        << " Energy = " << isim->energy();
       
       if (meEBoccupancy_) meEBoccupancy_->Fill( ebid.iphi(), ebid.ieta() );
       
@@ -453,11 +457,13 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
       CaloHitMap[(*isim).id()].push_back((*isim));
       
       EEDetId eeid (isim->id()) ;
-      
-      LogDebug("HitInfo")
-        <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
-        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
-        << "EEDetId side " << eeid.zside() << " = " << eeid.ix() << " " << eeid.iy() ;
+       
+      LogDebug("HitInfo") 
+        << " CaloHit " << isim->getName() << "\n" 
+        << " DetID = "<<isim->id()<< " EEDetId = " << eeid.ix() << " " << eeid.iy() << "\n"	
+        << " Time = " << isim->time() << "\n"
+        << " Track Id = " << isim->geantTrackId() << "\n"
+        << " Energy = " << isim->energy();
       
       if (eeid.zside() > 0 ) {
         EEetzp_ += isim->energy();
@@ -532,10 +538,11 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
       ESDetId esid (isim->id()) ;
       
       LogDebug("HitInfo")
-        <<" CaloHit " << isim->getName() << " DetID = "<<isim->id()<< "\n"
-        << "Energy = " << isim->energy() << " Time = " << isim->time() << "\n"
-        << "ESDetId: z side " << esid.zside() << "  plane " << esid.plane() << esid.six() << ',' << esid.siy() << ':' << esid.strip();
-      
+        << " CaloHit " << isim->getName() << "\n" 
+        << " DetID = "<<isim->id()<< " ESDetId: z side " << esid.zside() << "  plane " << esid.plane() << esid.six() << ',' << esid.siy() << ':' << esid.strip() << "\n"
+        << " Time = " << isim->time() << "\n"
+        << " Track Id = " << isim->geantTrackId() << "\n"
+        << " Energy = " << isim->energy();
       
       ESEnergy_ += isim->energy();
       
