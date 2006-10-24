@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/08/23 15:49:45 $
- * $Revision: 1.20 $
+ * $Date: 2006/09/08 10:02:54 $
+ * $Revision: 1.21 $
  * \author F. Cossutti
  *
 */
@@ -826,4 +826,4 @@ uint32_t EcalSimHitsTask::getUnitWithMaxEnergy(MapType& themap) {
 
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(EcalSimHitsTask)
+DEFINE_FWK_MODULE(EcalSimHitsTask);
