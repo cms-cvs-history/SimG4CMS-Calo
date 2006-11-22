@@ -2,6 +2,13 @@ es_source = XMLIdealGeometryESSource {
 	vstring geomXMLFiles = {
 		"Geometry/CMSCommonData/data/materials.xml",
 		"Geometry/CMSCommonData/data/rotations.xml",
+		"Geometry/CMSCommonData/data/cms.xml",
+                "Geometry/CMSCommonData/data/cmsMother.xml",
+		"Geometry/CMSCommonData/data/muonBase.xml",
+		"Geometry/CMSCommonData/data/muonMB.xml",
+                "Geometry/CMSCommonData/data/cmsMuon.xml",
+                "Geometry/CMSCommonData/data/caloBase.xml",
+                "Geometry/CMSCommonData/data/cmsCalo.xml",
 		"Geometry/HcalCommonData/data/hcalrotations.xml",
 		"Geometry/HcalCommonData/data/hcalalgo.xml",
 		"Geometry/EcalCommonData/data/ecal.xml",
@@ -10,12 +17,13 @@ es_source = XMLIdealGeometryESSource {
 		"Geometry/HcalCommonData/data/hcalouteralgo.xml",
 		"Geometry/HcalCommonData/data/hcalforwardalgo.xml",
 		"Geometry/HcalCommonData/data/hcalforwardmaterial.xml",
-		"Geometry/CMSCommonData/data/cms.xml",
 		"Geometry/EcalSimData/data/ecalsens.xml",
 		"Geometry/HcalCommonData/data/hcalsens.xml",
 		"Geometry/HcalSimData/data/CaloUtil.xml",
 		"Geometry/EcalSimData/data/EcalProdCuts.xml",
-		"Geometry/HcalSimData/data/HcalProdCuts.xml"
+		"Geometry/HcalSimData/data/HcalProdCuts.xml",
+                # Needed for magnetic field simulation.
+                "Geometry/CMSCommonData/data/FieldParameters.xml"
 	}
 	string rootNodeName = "cms:OCMS"
 }
