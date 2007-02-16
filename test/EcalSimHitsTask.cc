@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/09/08 10:02:54 $
- * $Revision: 1.21 $
+ * $Date: 2006/10/24 20:24:34 $
+ * $Revision: 1.22 $
  * \author F. Cossutti
  *
 */
@@ -13,7 +13,7 @@
 #include <DataFormats/EcalDetId/interface/ESDetId.h>
 #include "FWCore/Utilities/interface/Exception.h"
 
-EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
+EcalSimHitsTask::EcalSimHitsTask(const edm::ParameterSet& ps):
   HepMCLabel(ps.getParameter<std::string>("moduleLabelMC")),
   g4InfoLabel(ps.getParameter<std::string>("moduleLabelG4")),
   EBHitsCollection(ps.getParameter<std::string>("EBHitsCollection")),
@@ -23,21 +23,21 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
 
  
   // DQM ROOT output
-  outputFile_ = ps.getUntrackedParameter<string>("outputFile", "");
+  outputFile_ = ps.getUntrackedParameter<std::string>("outputFile", "");
  
   if ( outputFile_.size() != 0 ) {
-    LogInfo("OutputInfo") << " Ecal SimHits Task histograms will be saved to " << outputFile_.c_str();
+    edm::LogInfo("OutputInfo") << " Ecal SimHits Task histograms will be saved to " << outputFile_.c_str();
   } else {
-    LogInfo("OutputInfo") << " Ecal SimHits Task histograms will NOT be saved";
+    edm::LogInfo("OutputInfo") << " Ecal SimHits Task histograms will NOT be saved";
   }
  
   // verbosity switch
   verbose_ = ps.getUntrackedParameter<bool>("verbose", false);
  
   if ( verbose_ ) {
-    cout << " verbose switch is ON" << endl;
+    std::cout << " verbose switch is ON" << std::endl;
   } else {
-    cout << " verbose switch is OFF" << endl;
+    std::cout << " verbose switch is OFF" << std::endl;
   }
 
   // DQMServices 
@@ -46,7 +46,7 @@ EcalSimHitsTask::EcalSimHitsTask(const ParameterSet& ps):
 
   // get hold of back-end interface
 
-  dbe_ = Service<DaqMonitorBEInterface>().operator->();
+  dbe_ = edm::Service<DaqMonitorBEInterface>().operator->();
                                                                                                                                           
   if ( dbe_ ) {
     if ( verbose_ ) {
@@ -275,7 +275,7 @@ EcalSimHitsTask::~EcalSimHitsTask(){
 
 }
 
-void EcalSimHitsTask::beginJob(const EventSetup& c){
+void EcalSimHitsTask::beginJob(const edm::EventSetup& c){
 
 }
 
@@ -283,24 +283,24 @@ void EcalSimHitsTask::endJob(){
 
 }
 
-void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
+void EcalSimHitsTask::analyze(const edm::Event& e, const edm::EventSetup& c){
 
-  LogInfo("EventInfo") << " Run = " << e.id().run() << " Event = " << e.id().event();
+  edm::LogInfo("EventInfo") << " Run = " << e.id().run() << " Event = " << e.id().event();
   
-  vector<PCaloHit> theEBCaloHits;
-  vector<PCaloHit> theEECaloHits;
-  vector<PCaloHit> theESCaloHits;
-  vector<SimTrack> theSimTracks;
-  vector<SimVertex> theSimVertexes;
+  std::vector<PCaloHit> theEBCaloHits;
+  std::vector<PCaloHit> theEECaloHits;
+  std::vector<PCaloHit> theESCaloHits;
+  std::vector<SimTrack> theSimTracks;
+  std::vector<SimVertex> theSimVertexes;
 
-  Handle<HepMCProduct> MCEvt;
-  Handle<SimTrackContainer> SimTk;
-  Handle<SimVertexContainer> SimVtx;
-  Handle<PCaloHitContainer> EcalHitsEB;
-  Handle<PCaloHitContainer> EcalHitsEE;
-  Handle<PCaloHitContainer> EcalHitsES;
+  edm::Handle<edm::HepMCProduct> MCEvt;
+  edm::Handle<edm::SimTrackContainer> SimTk;
+  edm::Handle<edm::SimVertexContainer> SimVtx;
+  edm::Handle<edm::PCaloHitContainer> EcalHitsEB;
+  edm::Handle<edm::PCaloHitContainer> EcalHitsEE;
+  edm::Handle<edm::PCaloHitContainer> EcalHitsES;
 
-  Handle<PEcalValidInfo> MyPEcalValidInfo;
+  edm::Handle<PEcalValidInfo> MyPEcalValidInfo;
 
   e.getByLabel(HepMCLabel, MCEvt);
   e.getByLabel(g4InfoLabel,SimTk);
@@ -348,14 +348,14 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   }
   
   int nvtx = 0;
-  for (vector<SimVertex>::iterator isimvtx = theSimVertexes.begin();
+  for (std::vector<SimVertex>::iterator isimvtx = theSimVertexes.begin();
        isimvtx != theSimVertexes.end(); ++isimvtx){
     LogDebug("EventInfo") <<" Vertex index = " << nvtx << " event Id = " << isimvtx->eventId().rawId() << "\n" << " vertex dump: " << *isimvtx ;
     ++nvtx;
   }
   
   int ntrk = 0;
-  for (vector<SimTrack>::iterator isimtrk = theSimTracks.begin();
+  for (std::vector<SimTrack>::iterator isimtrk = theSimTracks.begin();
        isimtrk != theSimTracks.end(); ++isimtrk){
          LogDebug("EventInfo") <<" Track index = " << ntrk << " track Id = " << isimtrk->trackId() << " event Id = " << isimtrk->eventId().rawId() << "\n" << " track dump: " << *isimtrk ; 
     ++ntrk;
@@ -621,13 +621,13 @@ void EcalSimHitsTask::analyze(const Event& e, const EventSetup& c){
   
   if ( isLongitudinal ) {
     if ( MyPEcalValidInfo->eb1x1() > 0. ) {
-      vector<float>  BX0 = MyPEcalValidInfo->bX0();
+      std::vector<float>  BX0 = MyPEcalValidInfo->bX0();
       for (int ii=0;ii< 26;ii++ ) {
         if (meEBLongitudinalShower_) meEBLongitudinalShower_->Fill(float(ii), BX0[ii]);
       }
     }
     if ( MyPEcalValidInfo->ee1x1() > 0. ) {
-      vector<float>  EX0 = MyPEcalValidInfo->eX0();
+      std::vector<float>  EX0 = MyPEcalValidInfo->eX0();
       for (int ii=0;ii< 26;ii++ ) {
         if (meEELongitudinalShower_) meEELongitudinalShower_->Fill(float(ii), EX0[ii]);
       }

@@ -4,8 +4,8 @@
 /*
  * \file EcalSimHitsTask.h
  *
- * $Date: 2006/08/22 09:18:44 $
- * $Revision: 1.5 $
+ * $Date: 2006/09/08 10:02:03 $
+ * $Revision: 1.6 $
  * \author F. Cossutti
  *
 */
@@ -40,18 +40,15 @@
 #include <vector>
 #include <map>
 
-using namespace cms;
-using namespace edm;
-using namespace std;
 
-class EcalSimHitsTask: public EDAnalyzer{
+class EcalSimHitsTask: public edm::EDAnalyzer{
 
-    typedef map<uint32_t,float,less<uint32_t> >  MapType;
+    typedef std::map<uint32_t,float,std::less<uint32_t> >  MapType;
 
 public:
 
 /// Constructor
-EcalSimHitsTask(const ParameterSet& ps);
+EcalSimHitsTask(const edm::ParameterSet& ps);
 
 /// Destructor
 ~EcalSimHitsTask();
@@ -59,10 +56,10 @@ EcalSimHitsTask(const ParameterSet& ps);
 protected:
 
 /// Analyze
-void analyze(const Event& e, const EventSetup& c);
+void analyze(const edm::Event& e, const edm::EventSetup& c);
 
 // BeginJob
-void beginJob(const EventSetup& c);
+void beginJob(const edm::EventSetup& c);
 
 // EndJob
 void endJob(void);
@@ -90,18 +87,18 @@ private:
  float eCluster2x2( MapType& themap);
  float eCluster4x4(float e33,MapType& themap);
  
- string HepMCLabel;
- string g4InfoLabel;
- string EBHitsCollection;
- string EEHitsCollection;
- string ESHitsCollection;
- string ValidationCollection;
+ std::string HepMCLabel;
+ std::string g4InfoLabel;
+ std::string EBHitsCollection;
+ std::string EEHitsCollection;
+ std::string ESHitsCollection;
+ std::string ValidationCollection;
  
  bool verbose_;
  
  DaqMonitorBEInterface* dbe_;
  
- string outputFile_;
+ std::string outputFile_;
 
  MonitorElement* meGunEnergy_;
  MonitorElement* meGunEta_;
