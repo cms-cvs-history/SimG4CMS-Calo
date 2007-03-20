@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2006/10/24 20:24:34 $
- * $Revision: 1.22 $
+ * $Date: 2007/02/16 14:07:51 $
+ * $Revision: 1.23 $
  * \author F. Cossutti
  *
 */
@@ -332,10 +332,9 @@ void EcalSimHitsTask::analyze(const edm::Event& e, const edm::EventSetup& c){
   for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
         p != MCEvt->GetEvent()->particles_end(); ++p ) {
 
-    Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
-    double htheta = hmom.theta();
+    double htheta = (*p)->momentum().theta();
     double heta = -log(tan(htheta * 0.5));
-    double hphi = hmom.phi();
+    double hphi = (*p)->momentum().phi();
     hphi = (hphi>=0) ? hphi : hphi+2*M_PI;
     hphi = hphi / M_PI * 180.;
 
@@ -587,8 +586,7 @@ void EcalSimHitsTask::analyze(const edm::Event& e, const edm::EventSetup& c){
       for ( HepMC::GenEvent::particle_const_iterator p = MCEvt->GetEvent()->particles_begin();
             p != MCEvt->GetEvent()->particles_end(); ++p ) {
         
-        Hep3Vector hmom = Hep3Vector((*p)->momentum().vect());
-        double htheta = hmom.theta();
+        double htheta = (*p)->momentum().theta();
         double heta = -log(tan(htheta * 0.5));
         
         if ( heta > 1.653 && heta < 2.6 ) {
