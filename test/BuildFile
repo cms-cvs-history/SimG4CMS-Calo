@@ -4,7 +4,6 @@
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/EcalDetId>
 <use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
 <use name=FWCore/ParameterSet>
 <use name=FWCore/MessageLogger>
 <use name=DQMServices/CoreROOT>
