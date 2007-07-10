@@ -3,6 +3,7 @@
 <use name=SimDataFormats/Vertex>
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/EcalDetId>
+<use name=DataFormats/HcalDetId>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=FWCore/MessageLogger>
@@ -11,6 +12,7 @@
 <use name=root>
 <flags EDM_PLUGIN=1>
 <library file=EcalSimHitsTask.cc name=testEcalSimHits>
+<library file=HcalSimHitStudy.cc name=testHcalSimHits>
 </library>
 
 
