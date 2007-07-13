@@ -174,9 +174,10 @@ bool HCalSD::ProcessHits(G4Step * aStep, G4TouchableHistory * ) {
 	hitForFibre(aStep);
       }
     } else {
-      getStepInfo(aStep);
-      if (hitExists() == false && edepositEM+edepositHAD>0.) 
-	currentHit = createNewHit();
+      if (getStepInfo(aStep)) {
+	if (hitExists() == false && edepositEM+edepositHAD>0.) 
+	  currentHit = createNewHit();
+      }
     }
     return true;
   }
