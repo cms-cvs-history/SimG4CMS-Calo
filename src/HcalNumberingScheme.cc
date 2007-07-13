@@ -25,6 +25,7 @@ uint32_t HcalNumberingScheme::getUnitID(const HcalNumberingFromDDD::HcalID id){
   HcalSubdetector subdet =  (HcalSubdetector)(id.subdet);
 
   int flag = 0;
+  /*
   if (subdet == HcalOuter) {
     flag = -1;
   } else if (subdet == HcalBarrel && id.lay == 1) {
@@ -32,7 +33,8 @@ uint32_t HcalNumberingScheme::getUnitID(const HcalNumberingFromDDD::HcalID id){
     subdet = HcalOuter;
     depth  = 4;
   }
-  // if (subdet == HcalBarrel && id.lay == 1) { flag   = 1; depth = 3;}
+  */
+  if (subdet == HcalBarrel && id.lay == 1) { flag   = 1; depth = 3;}
 
   //pack it into an integer
   // to be consistent with HcalDetId convention
