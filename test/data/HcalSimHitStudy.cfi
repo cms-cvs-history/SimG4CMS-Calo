@@ -1,0 +1,6 @@
+   module hcalSimHitStudy = HcalSimHitStudy {
+      untracked string ModuleLabel   = "g4SimHits"
+      untracked string HitCollection = "HcalHits"
+      untracked string OutputFile    = "valid_HB.root"
+      untracked bool   Verbose       = true
+   } 

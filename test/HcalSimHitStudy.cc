@@ -11,9 +11,9 @@ HcalSimHitStudy::HcalSimHitStudy(const edm::ParameterSet& ps) {
   verbose_ = ps.getUntrackedParameter<bool>("Verbose", false);
   checkHit_= true;
 
-  edm::LogInfo("HcalHitValid") << "Module Label: " << g4Label << "   Hits: "
-			       << hcalHits << " / "<< checkHit_ 
-			       << "   Output: " << outFile_;
+  edm::LogInfo("HcalSim") << "Module Label: " << g4Label << "   Hits: "
+			  << hcalHits << " / "<< checkHit_ 
+			  << "   Output: " << outFile_;
 
   dbe_ = edm::Service<DaqMonitorBEInterface>().operator->();
   if (dbe_) {
@@ -82,8 +82,8 @@ void HcalSimHitStudy::endJob() {}
 
 void HcalSimHitStudy::analyze(const edm::Event& e, const edm::EventSetup& ) {
 
-  LogDebug("HcalHitValid") << "Run = " << e.id().run() << " Event = " 
-			   << e.id().event();
+  LogDebug("HcalSim") << "Run = " << e.id().run() << " Event = " 
+		      << e.id().event();
 
   std::vector<PCaloHit>               caloHits;
   edm::Handle<edm::PCaloHitContainer> hitsHcal;
@@ -94,12 +94,12 @@ void HcalSimHitStudy::analyze(const edm::Event& e, const edm::EventSetup& ) {
     catch ( cms::Exception &e ) { getHits = false; }
   } else { getHits = false;}
 
-  LogDebug("HcalHitValid") << "HcalValidation: Input flags Hits " << getHits;
+  LogDebug("HcalSim") << "HcalValidation: Input flags Hits " << getHits;
 
   if (getHits) {
     caloHits.insert(caloHits.end(),hitsHcal->begin(),hitsHcal->end());
-    LogDebug("HcalHitValid") << "HcalValidation: Hit buffer " 
-			     << caloHits.size(); 
+    LogDebug("HcalSim") << "HcalValidation: Hit buffer " 
+			<< caloHits.size(); 
     analyzeHits (caloHits);
   }
 }
@@ -118,11 +118,11 @@ void HcalSimHitStudy::analyzeHits (std::vector<PCaloHit>& hits) {
     int depth        = id.depth();
     int eta          = id.ieta();
     int phi          = id.iphi();
-    LogDebug("HcalHitValid") << "Hit[" << i << "] ID " << std::hex << id_ 
-			     << std::dec << " Det " << det << " Sub " 
-			     << subdet << " depth " << depth << " Eta " << eta
-			     << " Phi " << phi << " E " << energy << " time " 
-			     << time;
+    LogDebug("HcalSim") << "Hit[" << i << "] ID " << std::hex << id_ 
+			<< std::dec << " Det " << det << " Sub " 
+			<< subdet << " depth " << depth << " Eta " << eta
+			<< " Phi " << phi << " E " << energy << " time " 
+			<< time;
     if (det ==  4) { // Check DetId.h
       if      (subdet == static_cast<int>(HcalBarrel))  nHB++;
       else if (subdet == static_cast<int>(HcalEndcap))  nHE++;
@@ -178,9 +178,9 @@ void HcalSimHitStudy::analyzeHits (std::vector<PCaloHit>& hits) {
     meHONHit_->Fill(double(nHO));
     meHFNHit_->Fill(double(nHF));
   }
-  LogDebug("HcalHitValid") << "HcalSimHitStudy::analyzeHits: HB " << nHB 
-			   << " HE " << nHE << " HO " << nHO << " HF " << nHF 
-			   << " Bad " << nBad << " All " << nHit;
+  LogDebug("HcalSim") << "HcalSimHitStudy::analyzeHits: HB " << nHB 
+		      << " HE " << nHE << " HO " << nHO << " HF " << nHF 
+		      << " Bad " << nBad << " All " << nHit;
 
 }
 
