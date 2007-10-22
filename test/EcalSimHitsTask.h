@@ -4,8 +4,8 @@
 /*
  * \file EcalSimHitsTask.h
  *
- * $Date: 2006/09/08 10:02:03 $
- * $Revision: 1.6 $
+ * $Date: 2007/02/16 14:07:51 $
+ * $Revision: 1.7 $
  * \author F. Cossutti
  *
 */
@@ -33,7 +33,7 @@
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
-#include "SimDataFormats/EcalValidation/interface/PEcalValidInfo.h"
+#include "SimDataFormats/ValidationFormats/interface/PValidationFormats.h"
 
 #include <iostream>
 #include <fstream>
