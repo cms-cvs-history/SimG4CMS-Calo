@@ -25,6 +25,7 @@ es_source = XMLIdealGeometryESSource {
 		"Geometry/HcalCommonData/data/hcalendcapalgo.xml",
 		"Geometry/HcalCommonData/data/hcalouteralgo.xml",
 		"Geometry/HcalCommonData/data/hcalforwardalgo.xml",
+                "Geometry/HcalCommonData/data/hcalforwardfibre.xml",
 		"Geometry/HcalCommonData/data/hcalforwardmaterial.xml",
 		"Geometry/EcalSimData/data/ecalsens.xml",
 		"Geometry/HcalCommonData/data/hcalsens.xml",
