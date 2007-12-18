@@ -1,8 +1,8 @@
 /*
  * \file EcalSimHitsTask.cc
  *
- * $Date: 2007/02/16 14:07:51 $
- * $Revision: 1.23 $
+ * $Date: 2007/03/20 13:05:53 $
+ * $Revision: 1.24 $
  * \author F. Cossutti
  *
 */
@@ -305,23 +305,19 @@ void EcalSimHitsTask::analyze(const edm::Event& e, const edm::EventSetup& c){
   e.getByLabel(HepMCLabel, MCEvt);
   e.getByLabel(g4InfoLabel,SimTk);
   e.getByLabel(g4InfoLabel,SimVtx);
-  bool isBarrel = true;
-  try {
-    e.getByLabel(g4InfoLabel,EBHitsCollection,EcalHitsEB);
-  } catch ( cms::Exception &e ) { isBarrel = false; }
-  bool isEndcap = true;
-  try {
-    e.getByLabel(g4InfoLabel,EEHitsCollection,EcalHitsEE);
-  } catch ( cms::Exception &e ) { isEndcap = false; }
-  bool isPreshower = true;
-  try {
-    e.getByLabel(g4InfoLabel,ESHitsCollection,EcalHitsES);
-  } catch ( cms::Exception &e ) { isPreshower = false; }
+  bool isBarrel = false;
+  e.getByLabel(g4InfoLabel,EBHitsCollection,EcalHitsEB);
+  if (EcalHitsEB.isValid()) isBarrel = true;
+  bool isEndcap = false;
+  e.getByLabel(g4InfoLabel,EEHitsCollection,EcalHitsEE);
+  if (EcalHitsEE.isValid()) isEndcap = true;
+  bool isPreshower = false;
+  e.getByLabel(g4InfoLabel,ESHitsCollection,EcalHitsES);
+  if (EcalHitsES.isValid()) isPreshower = true;
   
-  bool isLongitudinal = true;
-  try {
-    e.getByLabel(g4InfoLabel,ValidationCollection,MyPEcalValidInfo);
-  } catch ( cms::Exception &e ) { isLongitudinal = false; }
+  bool isLongitudinal = false;
+  e.getByLabel(g4InfoLabel,ValidationCollection,MyPEcalValidInfo);
+  if (MyPEcalValidInfo.isValid()) isLongitudinal = true;
 
   theSimTracks.insert(theSimTracks.end(),SimTk->begin(),SimTk->end());
   theSimVertexes.insert(theSimVertexes.end(),SimVtx->begin(),SimVtx->end());

@@ -88,11 +88,11 @@ void HcalSimHitStudy::analyze(const edm::Event& e, const edm::EventSetup& ) {
   std::vector<PCaloHit>               caloHits;
   edm::Handle<edm::PCaloHitContainer> hitsHcal;
 
-  bool getHits = true;
+  bool getHits = false;
   if (checkHit_) {
-    try { e.getByLabel(g4Label,hcalHits,hitsHcal); } 
-    catch ( cms::Exception &e ) { getHits = false; }
-  } else { getHits = false;}
+    e.getByLabel(g4Label,hcalHits,hitsHcal); 
+    if (hitsHcal.isValid()) getHits = true;
+  }
 
   LogDebug("HcalSim") << "HcalValidation: Input flags Hits " << getHits;
 
