@@ -216,8 +216,7 @@ bool HCalSD::ProcessHits(G4Step * aStep, G4TouchableHistory * ) {
 			  << aStep->GetTrack()->GetDefinition()->GetParticleName() << ")";
       if (usePMTHit && showerPMT) getHitPMT(aStep);
     } else {
-      LogDebug("HcalSim") << "HCalSD: Hit from PMT parametrization from " 
-			  <<  nameVolume << " for Track " 
+      LogDebug("HcalSim") << "HCalSD: Hit from " <<  nameVolume <<" for Track "
 			  << aStep->GetTrack()->GetTrackID() << " ("
 			  << aStep->GetTrack()->GetDefinition()->GetParticleName() << ")";
       if (getStepInfo(aStep)) {
