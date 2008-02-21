@@ -11,7 +11,6 @@
 <use name=boost>
 <use name=root>
 <flags EDM_PLUGIN=1>
-<library file=EcalSimHitsTask.cc name=testEcalSimHits></library>
 <library file=HcalSimHitStudy.cc name=testHcalSimHits></library>
 
 
