@@ -7,7 +7,7 @@
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=FWCore/MessageLogger>
-<use name=DQMServices/CoreROOT>
+<use name=DQMServices/Core>
 <use name=boost>
 <use name=root>
 <flags EDM_PLUGIN=1>

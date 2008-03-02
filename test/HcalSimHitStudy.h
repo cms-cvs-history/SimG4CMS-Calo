@@ -41,9 +41,9 @@ protected:
 
 private:
 
-  std::string            g4Label, hcalHits, outFile_;
-  bool                   verbose_, checkHit_;
-  DQMStore* dbe_;
+  std::string    g4Label, hcalHits, outFile_;
+  bool           verbose_, checkHit_;
+  DQMStore       *dbe_;
 
   MonitorElement *meAllNHit_, *meBadDetHit_, *meBadSubHit_, *meBadIdHit_;
   MonitorElement *meHBNHit_, *meHENHit_, *meHONHit_, *meHFNHit_;
