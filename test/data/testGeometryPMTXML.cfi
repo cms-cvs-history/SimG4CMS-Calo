@@ -38,8 +38,7 @@ es_source = XMLIdealGeometryESSource {
        "Geometry/HcalSimData/data/hfpmt.xml",
        "Geometry/HcalSimData/data/CaloUtil.xml",
        "Geometry/EcalSimData/data/EcalProdCuts.xml",
-       "Geometry/HcalSimData/data/HcalProdCuts.xml",
-       "Geometry/CMSCommonData/data/FieldParameters.xml"
+       "Geometry/HcalSimData/data/HcalProdCuts.xml"
    }
    string rootNodeName = "cms:OCMS"
 }
