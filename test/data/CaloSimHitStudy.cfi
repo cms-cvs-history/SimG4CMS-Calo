@@ -1,0 +1,8 @@
+   module caloSimHitStudy = CaloSimHitStudy {
+      untracked string ModuleLabel   = "g4SimHits"
+      untracked string EBCollection  = "EcalHitsEB"
+      untracked string EECollection  = "EcalHitsEE"
+      untracked string ESCollection  = "EcalHitsES"
+      untracked string HCCollection  = "HcalHits"
+      untracked double MaxEnergy     = 50.0
+   } 
