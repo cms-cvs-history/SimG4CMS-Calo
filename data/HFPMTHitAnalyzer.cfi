@@ -1,0 +1,4 @@
+   module hfPMTHitAnalyzer = HFPMTHitAnalyzer {
+      untracked string moduleLabel   = "g4SimHits"
+      untracked string HitCollection = "HcalHits"
+   } 

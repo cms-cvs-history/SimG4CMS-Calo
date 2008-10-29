@@ -15,3 +15,4 @@
 <use name=root>
 <flags EDM_PLUGIN=1>
 <library file=CaloSimHitStudy.cc name=testCaloSimHits></library>
+<library file=HFPMTHitAnalyzer.cc name=testCaloHFPMTHitAnalyzer></library>
