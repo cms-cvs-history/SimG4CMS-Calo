@@ -1,9 +1,0 @@
-   module hoSimHitStudy = HOSimHitStudy {
-      untracked string ModuleLabel   = "g4SimHits"
-      untracked string EBCollection  = "EcalHitsEB"
-      untracked string HCCollection  = "HcalHits"
-      untracked double MaxEnergy     = 50.0
-      untracked double ScaleEB       = 1.02
-      untracked double ScaleHB       = 104.4
-      untracked double ScaleHO       = 2.33
-   } 
