@@ -2,7 +2,6 @@
 <use name=SimDataFormats/Track>
 <use name=SimDataFormats/Vertex>
 <use name=SimDataFormats/GeneratorProducts>
-<use name=SimG4CMS/Calo>
 <use name=DataFormats/EcalDetId>
 <use name=DataFormats/HcalDetId>
 <use name=FWCore/Framework>
@@ -10,9 +9,9 @@
 <use name=FWCore/MessageLogger>
 <use name=FWCore/ServiceRegistry>
 <use name=PhysicsTools/UtilAlgos>
-<use name=DQMServices/Core>
 <use name=boost>
 <use name=root>
+<use name=clhep>
 <flags EDM_PLUGIN=1>
 <library file=CaloSimHitStudy.cc name=testCaloSimHits></library>
 <library file=HOSimHitStudy.cc name=testHOSimHits></library>
