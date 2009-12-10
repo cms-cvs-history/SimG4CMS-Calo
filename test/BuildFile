@@ -2,6 +2,7 @@
 <use name=SimDataFormats/Track>
 <use name=SimDataFormats/Vertex>
 <use name=SimDataFormats/GeneratorProducts>
+<use name=SimG4CMS/Calo>
 <use name=DataFormats/EcalDetId>
 <use name=DataFormats/HcalDetId>
 <use name=FWCore/Framework>
