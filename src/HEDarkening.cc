@@ -10,24 +10,24 @@
 HEDarkening::HEDarkening() {
   // RADIUS (cm)
   for(int i=0;i<24;i++) radius[i]=40+i*10;
-  //DOSES for 500fb-1 (Mrad)
+  //DOSES for 500fb-1 (Mrad, Mika Huhtinen, CMS IN 2001/050 appro., from 40 up to 70cm)
   //LAYER -1 and 0
-  dose_lm1_l0[0 ]=6.54;    dose_lm1_l0[1 ]=3.12;    dose_lm1_l0[2 ]=2.90;    dose_lm1_l0[3 ]=1.79;    dose_lm1_l0[4 ]=1.35;    dose_lm1_l0[5 ]=.811;     
+  dose_lm1_l0[0 ]=7.00;    dose_lm1_l0[1 ]=3.00;    dose_lm1_l0[2 ]=1.70;    dose_lm1_l0[3 ]=1.20;    dose_lm1_l0[4 ]=1.35;    dose_lm1_l0[5 ]=.811;     
   dose_lm1_l0[6 ]=.656;    dose_lm1_l0[7 ]=.312;    dose_lm1_l0[8 ]=.264;    dose_lm1_l0[9 ]=.231;    dose_lm1_l0[10]=.196;    dose_lm1_l0[11]=.151;     
   dose_lm1_l0[12]=.139;    dose_lm1_l0[13]=.102;    dose_lm1_l0[14]=.0441;   dose_lm1_l0[15]=.0217;   dose_lm1_l0[16]=.0154;   dose_lm1_l0[17]=.00699;     
   dose_lm1_l0[18]=.00324;  dose_lm1_l0[19]=.00202;  dose_lm1_l0[20]=.000967; dose_lm1_l0[21]=.000729; dose_lm1_l0[22]=.000204; dose_lm1_l0[23]=.000117;     
   //LAYER 1 - 3 
-  dose_l1_l3[0 ]=156.;    dose_l1_l3[1 ]=2.35;    dose_l1_l3[2 ]=.879;    dose_l1_l3[3 ]=.511;    dose_l1_l3[4 ]=.387;    dose_l1_l3[5 ]=.216;     
+  dose_l1_l3[0 ]=10.0;    dose_l1_l3[1 ]=3.00;    dose_l1_l3[2 ]=1.6;    dose_l1_l3[3 ]=1.200;    dose_l1_l3[4 ]=.387;    dose_l1_l3[5 ]=.216;     
   dose_l1_l3[6 ]=.172;    dose_l1_l3[7 ]=.102;    dose_l1_l3[8 ]=.0611;   dose_l1_l3[9 ]=.0515;   dose_l1_l3[10]=.0411;   dose_l1_l3[11]=.0340;     
   dose_l1_l3[12]=.0286;   dose_l1_l3[13]=.0244;   dose_l1_l3[14]=.0170;   dose_l1_l3[15]=.00931;  dose_l1_l3[16]=.00642;  dose_l1_l3[17]=.00417;     
   dose_l1_l3[18]=.00206;  dose_l1_l3[19]=.00162;  dose_l1_l3[20]=.00103;  dose_l1_l3[21]=.000769; dose_l1_l3[22]=.000315; dose_l1_l3[23]=.000231;     
   //LAYER 4 - 5 
-  dose_l4_l5[0 ]=33.9;    dose_l4_l5[1 ]=6.61;    dose_l4_l5[2 ]=.379;    dose_l4_l5[3 ]=.198;    dose_l4_l5[4 ]=.152;    dose_l4_l5[5 ]=.086;     
+  dose_l4_l5[0 ]=8.00;    dose_l4_l5[1 ]=1.30;    dose_l4_l5[2 ]=.700;    dose_l4_l5[3 ]=.500;    dose_l4_l5[4 ]=.152;    dose_l4_l5[5 ]=.086;     
   dose_l4_l5[6 ]=.0666;   dose_l4_l5[7 ]=.0401;   dose_l4_l5[8 ]=.0213;   dose_l4_l5[9 ]=.0172;   dose_l4_l5[10]=.0131;   dose_l4_l5[11]=.0113;     
   dose_l4_l5[12]=.00898;  dose_l4_l5[13]=.00871;  dose_l4_l5[14]=.00740;  dose_l4_l5[15]=.00444;  dose_l4_l5[16]=.00302;  dose_l4_l5[17]=.00190;     
   dose_l4_l5[18]=.000987; dose_l4_l5[19]=.000873; dose_l4_l5[20]=.000490; dose_l4_l5[21]=.000312; dose_l4_l5[22]=.000245; dose_l4_l5[23]=.000131;     
   //LAYER 6 - 8 
-  dose_l6_l8[0 ]=5.66;    dose_l6_l8[1 ]=2.45;    dose_l6_l8[2 ]=.327;    dose_l6_l8[3 ]=.0990;   dose_l6_l8[4 ]=.0773;    dose_l6_l8[5 ]=.0439;     
+  dose_l6_l8[0 ]=8.00;    dose_l6_l8[1 ]=1.00;    dose_l6_l8[2 ]=.500;    dose_l6_l8[3 ]=.300;   dose_l6_l8[4 ]=.0773;    dose_l6_l8[5 ]=.0439;     
   dose_l6_l8[6 ]=.0334;   dose_l6_l8[7 ]=.0194;   dose_l6_l8[8 ]=.0102;   dose_l6_l8[9 ]=.00847;  dose_l6_l8[10]=.00491;   dose_l6_l8[11]=.00507;     
   dose_l6_l8[12]=.00389;  dose_l6_l8[13]=.00296;  dose_l6_l8[14]=.00300;  dose_l6_l8[15]=.00369;  dose_l6_l8[16]=.00219;   dose_l6_l8[17]=.00111;     
   dose_l6_l8[18]=.000543; dose_l6_l8[19]=.000284; dose_l6_l8[20]=.000191; dose_l6_l8[21]=.000165; dose_l6_l8[22]=.0000985; dose_l6_l8[23]=.0000435;     
